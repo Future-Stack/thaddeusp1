@@ -40,8 +40,8 @@ const RegisterPage = () => {
             </div>
             
             {/* Main Content */}
-            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-[550px] relative z-10">
-                <div className="bg-white rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
+            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-165 relative z-10">
+                <div className="bg-white rounded-4xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
                     
                     {/* Header */}
                     <div className="text-center mb-10">
@@ -50,7 +50,7 @@ const RegisterPage = () => {
                         </h1>
 
                         {/* Tabs Toggle */}
-                        <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between max-w-[400px] mx-auto mb-10">
+                        <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between w-full mx-auto mb-10">
                             <button className="flex-1 py-3 text-sm font-bold bg-white rounded-full shadow-sm text-gray-800 transition-all">
                                 Register
                             </button>
@@ -61,7 +61,7 @@ const RegisterPage = () => {
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-6">
+                    <form className="space-y-4">
                         {/* Full Name */}
                         <div>
                             <label className="block text-sm font-bold text-gray-800 mb-2.5 ml-1">
@@ -70,7 +70,7 @@ const RegisterPage = () => {
                             <input
                                 type="text"
                                 placeholder="John Doe"
-                                className="w-full px-6 py-4 bg-[#F8F9FA] border border-[#EEEEEE] rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
                             />
                         </div>
 
@@ -82,7 +82,7 @@ const RegisterPage = () => {
                             <input
                                 type="email"
                                 placeholder="john@example.com"
-                                className="w-full px-6 py-4 bg-[#F8F9FA] border border-[#EEEEEE] rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
                             />
                         </div>
 
@@ -95,7 +95,7 @@ const RegisterPage = () => {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="********"
-                                    className="w-full px-6 py-4 bg-[#F8F9FA] border border-[#EEEEEE] rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                    className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
                                 />
                                 <button
                                     type="button"
@@ -120,7 +120,7 @@ const RegisterPage = () => {
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
                                     placeholder="********"
-                                    className="w-full px-6 py-4 bg-[#F8F9FA] border border-[#EEEEEE] rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                    className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
                                 />
                                 <button
                                     type="button"
@@ -137,17 +137,17 @@ const RegisterPage = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <div className="pt-4">
+                        <div className="pt-2">
                             <button
                                 type="submit"
-                                className="w-full py-4.5 bg-primary text-white font-black text-lg rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0"
+                                className="w-full py-2 bg-primary text-white font-medium text-[14px] rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer"
                             >
                                 Create Account
                             </button>
                         </div>
 
                         {/* Separator */}
-                        <div className="relative py-6">
+                        <div className="relative py-3">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-100"></div>
                             </div>

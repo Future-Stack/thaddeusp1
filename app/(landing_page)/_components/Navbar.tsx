@@ -14,11 +14,11 @@ function Navbar() {
       <div className="container mx-auto px-4 md:px-0">
         <div className='flex justify-between items-center'>
           <div>
-            <Link href="/" className='block w-[190px] h-[75px]'>
+            <Link href="/" className='block w-47.5 h-18.75'>
               <Image
                 src="/logo/logo.png"
                 alt="WinAPizza!"
-                className='w-full h-full scale-150 object-cover'
+                className='w-full h-full   object-cover'
                 width={200}
                 height={75}
               />
@@ -85,18 +85,11 @@ function Navbar() {
                         <p className="text-[11px] text-[#8E94A4]">savannah@example.com</p>
                       </div>
 
-                      <button className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2">
+                      <Link href="/profile" className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                         Profile Settings
-                      </button>
-                      <button className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
-                        Orders & History
-                      </button>
-                      <button className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
-                        Help Center
-                      </button>
+                      </Link>
+                   
 
                       <div className="border-t border-gray-50 mt-1 pt-1">
                         <button className="w-full text-left px-4 py-2 text-[14px] text-red-500 hover:bg-red-50 transition-colors font-medium">

@@ -4,7 +4,7 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 
 const Hero = () => {
   return (
-    <section className="relative pt-[160px] pb-[200px] w-full  flex items-center">
+    <section className="relative pt-40 pb-50 w-full  flex items-center">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -18,7 +18,7 @@ const Hero = () => {
       </div>
 
       {/* Content Container */}
-      <div className="container mx-auto px-6 md:px-12 relative z-10">
+      <div className="container mx-auto   relative z-10">
         <div className="max-w-4xl">
           {/* Badge */}
           <AnimationWrapper animationType="fadeDown" delay={0.1}>
@@ -39,7 +39,7 @@ const Hero = () => {
 
           {/* Description */}
           <AnimationWrapper animationType="fadeRight" delay={0.3}>
-            <p className="text-lg md:text-[28px] text-gray-200 mb-10 leading-relaxed font-light font-inter">
+            <p className="max-w-xl text-lg md:text-[20px] text-gray-200 mb-10 leading-relaxed font-light font-inter">
               Every ticket you buy feeds a person in need. Win a delicious pizza while making someone's day brighter. Together, we can end hunger one slice at a time.
             </p>
           </AnimationWrapper>
@@ -58,16 +58,41 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Decorative dots with staggered animation */}
-      <AnimationWrapper animationType="fade" delay={0.6} duration={1}>
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-400 rounded-full animate-pulse opacity-60" />
-      </AnimationWrapper>
-      <AnimationWrapper animationType="fade" delay={0.8} duration={1}>
-        <div className="absolute bottom-1/3 left-1/2 w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse delay-700 opacity-40" />
-      </AnimationWrapper>
-      <AnimationWrapper animationType="fade" delay={1} duration={1}>
-        <div className="absolute top-1/2 right-1/4 w-2.5 h-2.5 bg-yellow-400 rounded-full animate-bounce opacity-30" />
-      </AnimationWrapper>
+      {/* Decorative dots with pulse animation */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Top Left Dot */}
+        <AnimationWrapper animationType="fade" delay={0.6}>
+          <div className="absolute top-[15%] left-[18%] w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.6)]" />
+        </AnimationWrapper>
+
+        {/* Middle Center Dot */}
+        <AnimationWrapper animationType="fade" delay={0.8}>
+          <div className="absolute top-[45%] left-[40%] w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse delay-300 opacity-60" />
+        </AnimationWrapper>
+
+        {/* Middle Right Dot */}
+        <AnimationWrapper animationType="fade" delay={1.0}>
+          <div className="absolute top-[60%] right-[35%] w-2 h-2 bg-yellow-400 rounded-full animate-pulse delay-500 shadow-[0_0_8px_rgba(250,204,21,0.4)]" />
+        </AnimationWrapper>
+
+        {/* Bottom Right Dot */}
+        <AnimationWrapper animationType="scaleUp" delay={1.2}>
+          <div className="absolute bottom-[20%] right-[15%] w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse delay-700 opacity-40" />
+        </AnimationWrapper>
+
+        {/* Pizza Slice */}
+        <AnimationWrapper animationType="fade" delay={1.4}>
+          <div className="absolute top-[65%] right-[8%] w-16 h-16 md:w-20 md:h-20 opacity-80 hover:opacity-100 transition-opacity duration-300 transform rotate-12">
+            <Image
+              src="/pizza.svg"
+              alt="Pizza slice"
+              width={80}
+              height={80}
+              className="object-contain animate-bounce-slow border-4 border-red-600"
+            />
+          </div>
+        </AnimationWrapper>
+      </div>
     </section>
   );
 };
