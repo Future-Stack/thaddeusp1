@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed top-0 left-0 bottom-0 w-64 z-[60] md:hidden shadow-2xl"
+                            className="fixed top-0 left-0 bottom-0 w-64 z-60 md:hidden shadow-2xl"
                         >
                             {SidebarContent}
                         </motion.aside>
