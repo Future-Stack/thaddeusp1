@@ -7,7 +7,7 @@ import ImpactCTA from './_components/ImpactCTA'
 import ChangeLife from './_components/ChangeLife'
 import RealStories from './_components/RealStories'
 import RecentWinners from './_components/RecentWinners'
-import Footer from './_components/Footer' 
+import Footer from './_components/Footer'
 import WinPizza from './_components/WinPizza'
 
 function HomePage() {
@@ -17,7 +17,6 @@ function HomePage() {
       <main>
         <Hero />
         <WinPizza />
-
         <ImpactSection />
         <ChangeLife />
         <HowItWorksNew />

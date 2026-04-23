@@ -1,8 +1,8 @@
 import React from 'react'
-import PersonalInfoCard from '../_components/PersonalInfoCard'
-import StatsCard from '../_components/StatsCard'
-import QuickActionsCard from '../_components/QuickActionsCard'
-import AccountSecurityCard from '../_components/AccountSecurityCard'
+import PersonalInfoCard from './_components/PersonalInfoCard'
+import StatsCard from './_components/StatsCard'
+import QuickActionsCard from './_components/QuickActionsCard'
+import AccountSecurityCard from './_components/AccountSecurityCard'
 import AnimationWrapper from '@/components/AnimationWrapper'
 
 const ProfilePage = () => {

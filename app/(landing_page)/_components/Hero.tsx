@@ -84,11 +84,11 @@ const Hero = () => {
         <AnimationWrapper animationType="fade" delay={1.4}>
           <div className="absolute top-[65%] right-[8%] w-16 h-16 md:w-20 md:h-20 opacity-80 hover:opacity-100 transition-opacity duration-300 transform rotate-12">
             <Image
-              src="/pizza.svg"
+              src="/pizza.png"
               alt="Pizza slice"
               width={80}
               height={80}
-              className="object-contain animate-bounce-slow border-4 border-red-600"
+              className="object-contain animate-bounce-slow  "
             />
           </div>
         </AnimationWrapper>
