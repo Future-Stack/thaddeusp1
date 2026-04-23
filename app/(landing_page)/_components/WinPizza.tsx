@@ -1,5 +1,6 @@
 import React from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import Link from 'next/link';
 
 const WinPizza = () => {
     const steps = [
@@ -45,14 +46,14 @@ const WinPizza = () => {
                     </AnimationWrapper>
 
                     <AnimationWrapper animationType="scaleUp" delay={0.3}>
-                        <button className="px-10 py-4 bg-[#FF4D00] text-white font-bold rounded-xl  cursor-pointer hover:scale-110 transition-all duration-300 overflow-hidden"
+                        <Link href="/location" className="px-10 py-4 bg-[#FF4D00] text-white font-bold rounded-xl  cursor-pointer hover:scale-110 transition-all duration-300 overflow-hidden"
                             style={{
                                 boxShadow: '0 0 39.992px 0 rgba(251, 146, 60, 0.80)'
                             }}
                         >
                             Join Your City's Draw
 
-                        </button>
+                        </Link>
                     </AnimationWrapper>
                 </div>
 
