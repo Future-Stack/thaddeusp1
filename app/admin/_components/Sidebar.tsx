@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     <Image src="/logo/logo.png" alt="WinAPizza" width={150} height={50} className="object-contain" />
                 </Link>
                 {/* Close button for mobile */}
-                <button 
+                <button
                     onClick={() => setIsOpen(false)}
                     className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
                 >
@@ -63,11 +63,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                             <Link
                                 href={item.href}
                                 onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                                    isActive
-                                        ? 'bg-[#D1D5DB] text-[#111827] font-semibold'
-                                        : 'text-gray-500 hover:bg-gray-100'
-                                }`}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
+                                    ? 'bg-[#D1D5DB] text-[#111827] font-semibold'
+                                    : 'text-gray-500 hover:bg-gray-100'
+                                    }`}
                             >
                                 <span className={`${isActive ? 'text-[#111827]' : 'text-gray-400'}`}>
                                     {item.icon}

@@ -56,7 +56,7 @@ const AdminLogin = () => {
                 className="w-full px-5 py-4 bg-white border border-[#E2E8F0] rounded-xl focus:outline-none focus:border-[#0B1221] focus:ring-1 focus:ring-[#0B1221] transition-all text-[#0B1221] placeholder:text-[#94A3B8] font-medium"
               />
               <div className="text-right mt-2">
-                <Link href="/admin/forgot-password" name="forgot-password-link" className="text-[11px] text-red-500 font-bold hover:underline">
+                <Link href="/admin/forgot-password"  className="text-[11px] text-red-500 font-bold hover:underline">
                   Forgot password?
                 </Link>
               </div>
