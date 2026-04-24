@@ -14,35 +14,47 @@ const pastWinners = Array(16).fill({
 
 const WinnersPage = () => {
     return (
-        <div className="min-h-screen bg-[#FDFDFD] selection:bg-[#FF5100]/10 selection:text-[#FF5100]">
+        <div className="min-h-screen   selection:bg-[#FF5100]/10 ">
             {/* Hero Section */}
-            <section className="bg-[#FF5100] pt-12 pb-24 md:pb-32 px-4 md:px-8 relative overflow-hidden">
+            <section className="py-9.25 md:px-8 relative overflow-hidden rounded-[10px]"
+                style={{
+                    background: "linear-gradient(90deg, #FF6900 0%, #F54900 100%)"
+                }}
+            >
                 {/* Subtle background elements could go here */}
                 <div className="max-w-6xl mx-auto relative z-10">
                     <div className="text-center">
                         <AnimationWrapper animationType="fadeDown">
-                            <div className="text-4xl md:text-5xl mb-4 drop-shadow-lg">🥳</div>
-                            <h1 className="text-3xl md:text-[48px] font-black text-white mb-10 tracking-tight leading-tight">
+                            <div className="text-4xl md:text-5xl mb-4 drop-shadow-lg text-center">
+                                <Image src="/party.png" width={60} height={60} alt="party" className='mx-auto' />
+                            </div>
+                            <h1 className="text-3xl md:text-[32px] font-bold text-white mb-10 tracking-tight leading-tight">
                                 This Week's Winner!
                             </h1>
                         </AnimationWrapper>
 
                         <AnimationWrapper animationType="scaleUp" delay={0.2}>
-                            <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl rounded-[40px] p-8 md:p-16 text-white border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)]">
-                                <h2 className="text-4xl md:text-[54px] font-black mb-1 leading-none">Sarah M.</h2>
-                                <p className="text-white/80 text-lg md:text-xl font-medium mb-10">New York</p>
-                                
-                                <div className="w-full h-[1px] bg-white/20 mb-10 max-w-[320px] mx-auto"></div>
+                            <div className="max-w-2xl mx-auto  px-8  py-5.5 text-white border border-white/20 "
+                                style={{
+                                    borderRadius: '10px',
+                                    background: 'rgba(255, 255, 255, 0.10)'
+                                }}
+                            >
+                                <h2 className="text-xl md:text-[30px] font-bold mb-1 leading-none">Sarah M.</h2>
+                                <p className="text-white text-lg md:text-xl mb-4">New York</p>
+
+
+                                <div className="w-full h-px bg-white/50 mb-4   mx-auto"></div>
 
                                 <div className="space-y-3">
-                                    <p className="text-xl md:text-2xl font-bold tracking-tight">1x Large Pizza Voucher - Joe's Pizza NYC</p>
-                                    <p className="text-white/60 text-sm md:text-base font-medium">Draw Date: April 18, 2026</p>
+                                    <p className="text-xl md:text-[18px] tracking-tight">1x Large Pizza Voucher - Joe's Pizza NYC</p>
+                                    <p className="text-white text-sm    ">Draw Date: April 18, 2026</p>
                                 </div>
                             </div>
                         </AnimationWrapper>
 
                         <AnimationWrapper animationType="fadeUp" delay={0.4} className="mt-14">
-                            <button className="bg-white text-[#FF5100] px-12 py-5 rounded-[22px] font-black text-lg hover:bg-white/95 transition-all transform hover:scale-[1.03] active:scale-[0.98] shadow-[0_10px_25px_rgba(0,0,0,0.1)]">
+                            <button className="bg-white text-[#FF5100] px-12 py-5 rounded-xl font-bold text-lg   transition-all transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer">
                                 Enter Next Week's Draw
                             </button>
                         </AnimationWrapper>
@@ -51,11 +63,11 @@ const WinnersPage = () => {
             </section>
 
             {/* Past Winners Section */}
-            <section className="max-w-7xl mx-auto px-4 md:px-8 -mt-10 md:-mt-14 pb-20">
-                <div className="bg-white rounded-[40px] p-6 md:p-12 shadow-[0_15px_40px_rgba(0,0,0,0.03)] border border-gray-100/50">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+            <section className="w-full">
+                <div className="mt-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-6">
                         <AnimationWrapper animationType="fadeRight">
-                            <h2 className="text-2xl md:text-[32px] font-black text-[#1A202C] tracking-tight">Past Winners</h2>
+                            <h2 className="text-2xl md:text-[32px] font-bold text-[#1A202C] tracking-tight">Past Winners</h2>
                         </AnimationWrapper>
 
                         <AnimationWrapper animationType="fadeLeft" className="flex items-center gap-4">
@@ -78,7 +90,11 @@ const WinnersPage = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
                         {pastWinners.map((winner, i) => (
                             <AnimationWrapper key={i} animationType="fadeUp" delay={i * 0.04}>
-                                <div className="bg-white border border-gray-100/80 rounded-[28px] p-5 flex items-center gap-4 hover:shadow-[0_10px_30px_rgba(255,81,0,0.08)] hover:border-[#FF5100]/20 transition-all duration-500 group cursor-pointer relative overflow-hidden">
+                                <div className="bg-white  rounded-[14px] p-4 flex items-center gap-4 group cursor-pointer relative overflow-hidden"
+                                    style={{
+                                        border: '1px solid rgba(0, 0, 0, 0.10)'
+                                    }}
+                                >
                                     <div className="w-14 h-14 rounded-full overflow-hidden shrink-0 bg-gray-50 border-2 border-white shadow-sm group-hover:scale-110 transition-transform duration-500">
                                         <Image
                                             src={winner.image}
@@ -91,7 +107,7 @@ const WinnersPage = () => {
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start mb-0.5">
                                             <h4 className="font-black text-[#1A202C] truncate text-[15px] group-hover:text-[#FF5100] transition-colors">{winner.name}</h4>
-                                            <span className="text-[10px] font-bold text-gray-300 pt-0.5">
+                                            <span className="text-[#6A7282] pt-0.5 text-[12px]">
                                                 {winner.date}
                                             </span>
                                         </div>
