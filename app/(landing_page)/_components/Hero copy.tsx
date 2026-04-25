@@ -62,38 +62,22 @@ const Hero = () => {
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Top Left Dot */}
         <AnimationWrapper animationType="fade" delay={0.6}>
-          <div className="absolute top-[15%] left-[18%] w-2 h-2 bg-yellow-400 rounded-full"
-            style={{
-              animation: 'glowPulse 2s ease-in-out infinite',
-            }}
-          />
+          <div className="absolute top-[15%] left-[18%] w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.6)]" />
         </AnimationWrapper>
 
         {/* Middle Center Dot */}
         <AnimationWrapper animationType="fade" delay={0.8}>
-          <div className="absolute top-[45%] left-[40%] w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-60"
-            style={{
-              animation: 'glowPulse 2.4s ease-in-out infinite 0.3s',
-            }}
-          />
+          <div className="absolute top-[45%] left-[40%] w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse delay-300 opacity-60" />
         </AnimationWrapper>
 
         {/* Middle Right Dot */}
         <AnimationWrapper animationType="fade" delay={1.0}>
-          <div className="absolute top-[60%] right-[35%] w-2 h-2 bg-yellow-400 rounded-full"
-            style={{
-              animation: 'glowPulse 2.8s ease-in-out infinite 0.5s',
-            }}
-          />
+          <div className="absolute top-[60%] right-[35%] w-2 h-2 bg-yellow-400 rounded-full animate-pulse delay-500 shadow-[0_0_8px_rgba(250,204,21,0.4)]" />
         </AnimationWrapper>
 
         {/* Bottom Right Dot */}
         <AnimationWrapper animationType="scaleUp" delay={1.2}>
-          <div className="absolute bottom-[20%] right-[15%] w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-40"
-            style={{
-              animation: 'glowPulse 3s ease-in-out infinite 0.7s',
-            }}
-          />
+          <div className="absolute bottom-[20%] right-[15%] w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse delay-700 opacity-40" />
         </AnimationWrapper>
 
         {/* Pizza Slice */}

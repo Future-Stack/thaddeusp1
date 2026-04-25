@@ -138,12 +138,18 @@ const RegisterPage = () => {
 
                         {/* Submit Button */}
                         <div className="pt-2">
-                            <button
+                            <Link href="/"
+                                type="submit"
+                                className="w-full block text-center py-2 bg-primary text-white font-medium text-[14px] rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+                            >
+                                Create Account
+                            </Link>
+                            {/* <button
                                 type="submit"
                                 className="w-full py-2 bg-primary text-white font-medium text-[14px] rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer"
                             >
                                 Create Account
-                            </button>
+                            </button> */}
                         </div>
 
                         {/* Separator */}

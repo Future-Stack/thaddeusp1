@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import WinnerModal from './WinnerModal';
 
 interface RegionStatsCardProps {
     regionName: string;
@@ -18,6 +19,8 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
     poolTotal,
     participants,
 }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <div className="mb-10">
             <div className="flex justify-between items-center mb-6">
@@ -41,7 +44,10 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                             <h3 className="text-2xl font-bold text-[#111827] mb-1">{regionName} Pool</h3>
                             <p className="text-gray-400 text-sm">Draw Week: {drawWeek}</p>
                         </div>
-                        <button className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200">
+                        <button 
+                            onClick={() => setIsModalOpen(true)}
+                            className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95"
+                        >
                             Select Winner
                         </button>
                     </div>
@@ -67,6 +73,12 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                     </div>
                 </div>
             </AnimationWrapper>
+
+            <WinnerModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                regionName={regionName}
+            />
         </div>
     );
 };
@@ -76,3 +88,4 @@ const ChevronDownIcon = () => (
 );
 
 export default RegionStatsCard;
+

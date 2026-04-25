@@ -10,46 +10,22 @@ const LoginPage = () => {
     return (
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
             {/* Scattered Decorative Dots - Following Image Pattern */}
-
-                 {/* Decorative dots with pulse animation */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-   
- 
-      </div>
             {/* Large Orange Dot Left */}
-            <div className="absolute top-[20%] left-[5%] w-3 h-3 bg-[#FF9D41] rounded-full opacity-50 shadow-[0_0_10px_#FF9D4133]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.3s',
-            }} />
+            <div className="absolute top-[20%] left-[5%] w-3 h-3 bg-[#FF9D41] rounded-full opacity-50 shadow-[0_0_10px_#FF9D4133]" />
             {/* Small Yellow Dot Far Left */}
-            <div className="absolute top-[35%] left-[2%] w-1.5 h-1.5 bg-[#FFD45E] rounded-full opacity-30"    style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.4s',
-            }}/>
+            <div className="absolute top-[35%] left-[2%] w-1.5 h-1.5 bg-[#FFD45E] rounded-full opacity-30" />
             {/* Medium Orange Dot Center Left */}
-            <div className="absolute top-[30%] left-[25%] w-4 h-4 bg-[#FF7A30] rounded-full opacity-60 shadow-[0_0_15px_#FF7A3044]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.5s',
-            }} />
+            <div className="absolute top-[30%] left-[25%] w-4 h-4 bg-[#FF7A30] rounded-full opacity-60 shadow-[0_0_15px_#FF7A3044]" />
 
             {/* Dots Bottom Left */}
-            <div className="absolute bottom-[20%] left-[15%] w-2 h-2 bg-[#FFD45E] rounded-full opacity-40"    style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.6s',
-            }}/>
-            <div className="absolute bottom-[40%] left-[12%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-30"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.7s',
-            }} />
+            <div className="absolute bottom-[20%] left-[15%] w-2 h-2 bg-[#FFD45E] rounded-full opacity-40" />
+            <div className="absolute bottom-[40%] left-[12%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-30" />
 
             {/* Dots Far Right */}
-            <div className="absolute top-[18%] right-[8%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40 shadow-[0_0_12px_#FFD45E33]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.8s',
-            }}/>
-            <div className="absolute top-[32%] right-[15%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-50"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.9s',
-            }} />
-            <div className="absolute bottom-[25%] right-[2%] w-4 h-4 bg-[#FFB200] rounded-full opacity-60 shadow-[0_0_20px_#FFB20033]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.10s',
-            }}/>
-            <div className="absolute bottom-[10%] right-[30%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.11s',
-            }}/>
+            <div className="absolute top-[18%] right-[8%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40 shadow-[0_0_12px_#FFD45E33]" />
+            <div className="absolute top-[32%] right-[15%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-50" />
+            <div className="absolute bottom-[25%] right-[2%] w-4 h-4 bg-[#FFB200] rounded-full opacity-60 shadow-[0_0_20px_#FFB20033]" />
+            <div className="absolute bottom-[10%] right-[30%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40" />
 
             {/* Grid Pattern Dots */}
             <div className="absolute top-[-2%] left-[-2%] opacity-[0.03] rotate-12 pointer-events-none">

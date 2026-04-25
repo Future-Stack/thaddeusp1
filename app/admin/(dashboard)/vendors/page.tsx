@@ -1,11 +1,11 @@
-import React from 'react'
+import VendorList from './_components/VendorList';
 
 function Vendors() {
   return (
-    <div className='h-[80vh] w-full flex justify-center items-center'>
-      <h2 className='text-4xl'>Coming Soon</h2>
+    <div className="max-w-7xl mx-auto py-6">
+      <VendorList />
     </div>
-  )
+  );
 }
 
-export default Vendors
+export default Vendors;

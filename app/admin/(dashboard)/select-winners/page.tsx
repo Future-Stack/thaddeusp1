@@ -7,8 +7,8 @@ export default function SelectWinnersPage() {
     return (
         <div className="w-full">
             <WinnerSelectionHeader />
-            
-            <RegionStatsCard 
+
+            <RegionStatsCard
                 regionName="New York"
                 drawWeek="April 14-20, 2026"
                 totalTickets={312}
