@@ -5,7 +5,7 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 
 const RevenuePage = () => {
     return (
-        <div className="p-6 lg:p-10 max-w-[1600px] mx-auto">
+        <div className="  w-full  mx-auto">
             <AnimationWrapper animationType="fadeDown" delay={0.1}>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
                     <div>
@@ -14,7 +14,7 @@ const RevenuePage = () => {
                     </div>
                     
                     <div className="flex items-center gap-4 w-full sm:w-auto">
-                        <div className="relative min-w-[160px]">
+                        <div className="relative min-w-40">
                             <select className="appearance-none w-full bg-white border border-gray-100 rounded-full px-6 py-3 pr-12 text-sm font-semibold text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer transition-all">
                                 <option>last week</option>
                                 <option>last month</option>
