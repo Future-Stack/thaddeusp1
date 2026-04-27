@@ -8,7 +8,7 @@ const Toggle = ({ enabled, setEnabled, activeColor = "bg-[#FF5C00]" }: { enabled
     return (
         <button
             onClick={() => setEnabled(!enabled)}
-            className={`${enabled ? activeColor : 'bg-gray-200'} relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none`}
+            className={`${enabled ? activeColor : 'bg-gray-200'} shrink-0 relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none`}
         >
             <span
                 className={`${enabled ? 'translate-x-6' : 'translate-x-1'} inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm`}
@@ -56,7 +56,7 @@ const Settings = () => {
                 </div>
 
                 <AnimationWrapper animationType="fadeUp">
-                    <div className="bg-white border border-gray-100 rounded-[24px] p-4 md:p-8 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
                         <div className="space-y-4">
                             {/* Maintenance Mode */}
                             <div className="flex items-center justify-between p-6 border border-gray-100 rounded-[20px] transition-all hover:bg-gray-50/50">
@@ -141,7 +141,7 @@ const Settings = () => {
 
                 {/* Notification Settings */}
                 <AnimationWrapper animationType="fadeUp" delay={0.1}>
-                    <div className="bg-white border border-gray-100 rounded-[24px] p-4 md:p-8 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
                         <div className="flex items-center gap-2 mb-6 px-2">
                             <span className="text-xl">📧</span>
                             <h2 className="text-xl font-bold text-[#111827]">Notification Settings</h2>
@@ -207,9 +207,9 @@ const Settings = () => {
                             </div>
 
                             {/* Marketing Emails to Users */}
-                            <div className="flex items-center justify-between p-6 border border-[#BBF7D0] bg-[#F0FDF4] rounded-[20px] transition-all hover:bg-[#DCFCE7]">
+                            <div className="flex items-center justify-between p-4 md:p-6 border border-[#BBF7D0] bg-[#F0FDF4] rounded-[20px] transition-all hover:bg-[#DCFCE7]">
                                 <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-2">
                                         <h3 className="text-[#166534] font-bold text-lg">Marketing Emails to Users</h3>
                                         <span className="bg-[#00A344] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                             Revenue Generator
@@ -233,7 +233,7 @@ const Settings = () => {
                 </AnimationWrapper>
                 {/* Payment Settings */}
                 <AnimationWrapper animationType="fadeUp" delay={0.2}>
-                    <div className="bg-white border border-gray-100 rounded-[24px] p-4 md:p-8 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
                         <div className="flex items-center gap-2 mb-6 px-2">
                             <span className="text-xl">💳</span>
                             <h2 className="text-xl font-bold text-[#111827]">Payment Settings</h2>
@@ -291,7 +291,7 @@ const Settings = () => {
 
                 {/* Prize & Voucher Settings */}
                 <AnimationWrapper animationType="fadeUp" delay={0.3}>
-                    <div className="bg-white border border-gray-100 rounded-[24px] p-4 md:p-8 shadow-sm">
+                    <div className="bg-white border border-gray-100 rounded-3xl p-4 md:p-8 shadow-sm">
                         <div className="flex items-center gap-2 mb-6 px-2">
                             <span className="text-xl">🎁</span>
                             <h2 className="text-xl font-bold text-[#111827]">Prize & Voucher Settings</h2>

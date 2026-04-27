@@ -14,16 +14,17 @@ const totals = {
     ticketsSold: 832,
     poolTotal: 832,
     voucherCost: 150,
-    donateAmount: 682
+    donateAmount: 682,
 };
 
 const RevenueTable = () => {
     return (
         <AnimationWrapper animationType="fadeUp" delay={0.5}>
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100">
-                <h2 className="text-2xl font-bold text-[#111827] mb-8">Revenue by Region</h2>
-                
-                <div className="overflow-x-auto">
+            <div className="bg-white rounded-[2.5rem] p-4 sm:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#111827] mb-6 sm:mb-8">Revenue by Region</h2>
+
+                {/* ── Desktop table (sm and up) ── */}
+                <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="text-left border-b border-gray-50">
@@ -55,21 +56,62 @@ const RevenueTable = () => {
                     </table>
                 </div>
 
-                <div className="flex justify-center items-center gap-2 mt-12">
+                {/* ── Mobile cards (below sm) ── */}
+                <div className="sm:hidden space-y-3">
+                    {revenueData.map((row, idx) => (
+                        <div key={idx} className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4">
+                            <p className="font-bold text-[#111827] text-sm mb-3">{row.region}</p>
+                            <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tickets Sold</span>
+                                <span className="text-sm font-medium text-gray-500 text-right">{row.ticketsSold}</span>
+
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pool Total</span>
+                                <span className="text-sm font-bold text-[#059669] text-right">${row.poolTotal}</span>
+
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Voucher Cost</span>
+                                <span className="text-sm font-bold text-[#EF4444] text-right">${row.voucherCost}</span>
+
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Donate Amount</span>
+                                <span className="text-sm font-bold text-[#111827] text-right">${row.donateAmount}</span>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Totals card */}
+                    <div className="rounded-2xl border border-gray-100 bg-[#F9FAFB] p-4">
+                        <p className="font-bold text-[#111827] text-sm uppercase tracking-wider mb-3">Total</p>
+                        <div className="grid grid-cols-2 gap-y-2 gap-x-4">
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tickets Sold</span>
+                            <span className="text-sm font-extrabold text-[#111827] text-right">{totals.ticketsSold}</span>
+
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Pool Total</span>
+                            <span className="text-sm font-extrabold text-[#059669] text-right">${totals.poolTotal}</span>
+
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Voucher Cost</span>
+                            <span className="text-sm font-extrabold text-[#EF4444] text-right">${totals.voucherCost}</span>
+
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Donate Amount</span>
+                            <span className="text-sm font-extrabold text-[#111827] text-right">${totals.donateAmount}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Pagination ── */}
+                <div className="flex justify-center items-center gap-1 sm:gap-2 mt-8 sm:mt-12">
                     <button className="p-2 text-gray-400 hover:text-[#4F46E5] transition-colors flex items-center gap-1 text-sm font-medium">
                         <ChevronLeft size={18} />
-                        Previous
+                        <span className="hidden xs:inline">Previous</span>
                     </button>
-                    
-                    <div className="flex items-center gap-1 mx-2">
-                        <button className="w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">1</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium bg-[#E0E7FF] text-[#4F46E5]">2</button>
-                        <button className="w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">3</button>
-                        <span className="px-2 text-gray-400">...</span>
+
+                    <div className="flex items-center gap-1 mx-1 sm:mx-2">
+                        <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">1</button>
+                        <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-sm font-medium bg-[#E0E7FF] text-[#4F46E5]">2</button>
+                        <button className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">3</button>
+                        <span className="px-1 sm:px-2 text-gray-400">...</span>
                     </div>
 
                     <button className="p-2 text-gray-400 hover:text-[#4F46E5] transition-colors flex items-center gap-1 text-sm font-medium">
-                        Next
+                        <span className="hidden xs:inline">Next</span>
                         <ChevronRight size={18} />
                     </button>
                 </div>

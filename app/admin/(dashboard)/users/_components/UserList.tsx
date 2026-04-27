@@ -33,7 +33,7 @@ const UserList = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="text-left border-b border-gray-50">
@@ -60,7 +60,68 @@ const UserList = () => {
                             ))}
                         </tbody>
                     </table>
-                </div>
+                </div> */}
+
+<div>
+  {/* Desktop Table - hidden on mobile */}
+  <div className="hidden sm:block overflow-x-auto">
+    <table className="w-full">
+      <thead>
+        <tr className="text-left border-b border-gray-50">
+          <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Name</th>
+          <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Email</th>
+          <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Region</th>
+          <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Tickets</th>
+          <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Purchase Date</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-50">
+        {users.map((user, idx) => (
+          <tr key={idx} className="group hover:bg-gray-50/50 transition-colors">
+            <td className="py-5 font-bold text-[#111827] text-sm">{user.name}</td>
+            <td className="py-5 text-gray-500 text-sm">{user.email}</td>
+            <td className="py-5 text-gray-500 text-sm">{user.region}</td>
+            <td className="py-5">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-50 text-orange-600 text-xs font-bold border border-orange-100">
+                {user.tickets}
+              </span>
+            </td>
+            <td className="py-5 text-gray-500 text-sm">{user.date}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Mobile Cards - shown only on mobile */}
+  <div className="sm:hidden divide-y divide-gray-100">
+    {users.map((user, idx) => (
+      <div key={idx} className="py-4 flex flex-col gap-2 hover:bg-gray-50/50 transition-colors px-1">
+        
+        {/* Top row: Name + Tickets badge */}
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-[#111827] text-sm">{user.name}</span>
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-50 text-orange-600 text-xs font-bold border border-orange-100">
+            {user.tickets}
+          </span>
+        </div>
+
+        {/* Email */}
+        <span className="text-gray-500 text-sm truncate">{user.email}</span>
+
+        {/* Bottom row: Region + Date */}
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold text-gray-400 tracking-wider uppercase">{user.region}</span>
+          <span className="text-gray-400 text-xs">{user.date}</span>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</div>
+
+
+
 
                 <div className="flex justify-center items-center gap-2 mt-12">
                     <button className="p-2 text-gray-400 hover:text-primary transition-colors flex items-center gap-1 text-sm font-medium">

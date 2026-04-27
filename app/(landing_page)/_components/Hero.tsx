@@ -1,10 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import Link from 'next/link';
 
 const Hero = () => {
   return (
-    <section className="relative pt-40 pb-50 w-full  flex items-center">
+    <section className="relative px-4 md:px-0 pt-10 pb-10 md:pt-40 md:pb-50 w-full  flex items-center">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -47,9 +48,9 @@ const Hero = () => {
           {/* CTA Buttons */}
           <AnimationWrapper animationType="fadeUp" delay={0.4}>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="px-8 py-4 bg-white text-[#EA7307] font-bold rounded-xl shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300">
+              <Link href="/ticket" className="px-8 py-4 bg-white text-[#EA7307] font-bold rounded-xl shadow-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300">
                 Buy Tickets & Help Now
-              </button>
+              </Link>
               <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 hover:scale-105 transition-all duration-300">
                 See Our Impact
               </button>

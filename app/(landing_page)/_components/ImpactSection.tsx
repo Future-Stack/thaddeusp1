@@ -30,7 +30,7 @@ const ImpactSection = () => {
     ];
 
     return (
-        <section className="py-24 bg-[#FFFAF6] relative overflow-hidden">
+        <section className="px-4 md:px-0 py-24 bg-[#FFFAF6] relative overflow-hidden">
             {/* Floating Decorative Elements - Matching background items in the image */}
             <div className="absolute top-24 right-[33%] opacity-20 transform -rotate-12 select-none pointer-events-none hidden lg:block">
                 <span className="text-5xl filter grayscale brightness-110 contrast-50 opacity-30">🎲</span>

@@ -50,7 +50,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, className = ""
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-[60] text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-60 text-gray-400 hover:text-gray-600"
               aria-label="Close modal"
             >
               <XIcon />

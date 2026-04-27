@@ -80,7 +80,7 @@ export default function UserDashboard() {
 
             {/* Success Banner */}
             <AnimationWrapper animationType="fadeUp" delay={0.1} className=" ">
-              <div className="bg-[#D1FAE5] border border-[#A7F3D0] rounded-4xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_10px_40px_-15px_rgba(16,185,129,0.2)]">
+              <div className="bg-[#D1FAE5] border border-[#A7F3D0] rounded-xl md:rounded-4xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_10px_40px_-15px_rgba(16,185,129,0.2)]">
                 <div className="flex items-center gap-6">
                   <div className="flex items-center justify-center text-4xl shadow-xl shadow-green-900/5 rotate-3">
                     <Image src="/party.png" width={60} height={60} className='w-full h-full' alt="party" />
@@ -106,7 +106,7 @@ export default function UserDashboard() {
 
 
               {/* Active Tickets */}
-              <AnimationWrapper animationType="fadeUp" delay={0.2} className="bg-white rounded-4xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30 flex flex-col h-full hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] transition-shadow duration-500">
+              <AnimationWrapper animationType="fadeUp" delay={0.2} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30 flex flex-col h-full hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] transition-shadow duration-500">
                 <h3 className="text-2xl font-bold mb-8 text-gray-900">Active Tickets</h3>
                 <Countdown />
                 <div className="mt-10 space-y-4 grow">
@@ -133,7 +133,7 @@ export default function UserDashboard() {
               </AnimationWrapper>
 
               {/* Region Info */}
-              <AnimationWrapper animationType="fadeUp" delay={0.3} className="bg-white rounded-4xl p-10  border border-primary/30 flex flex-col h-full  ">
+              <AnimationWrapper animationType="fadeUp" delay={0.3} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10  border border-primary/30 flex flex-col h-full  ">
                 <h3 className="text-2xl font-bold mb-8 text-gray-900">Region Info</h3>
                 <div className="bg-[#EFF6FF] rounded-3xl p-8 mb-10 grow border border-[#BEDBFF]">
                   <div className="flex items-start gap-5 mb-8">
@@ -169,7 +169,7 @@ export default function UserDashboard() {
             </div>
 
             {/* Past Draws */}
-            <AnimationWrapper animationType="fadeUp" delay={0.4} className="bg-white rounded-4xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30">
+            <AnimationWrapper animationType="fadeUp" delay={0.4} className="bg-white rounded-xl  md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                   <span className="text-3xl">🏆</span>
@@ -202,13 +202,13 @@ export default function UserDashboard() {
 
           {/* Right Side (Winner Card - col-span-4) */}
           <div className="lg:col-span-3 ">
-            <AnimationWrapper animationType="fadeLeft" delay={0.5} className="sticky min-h-170 top-10 bg-[#FAF9F0] border border-primary/30 rounded-[38px]">
+            <AnimationWrapper animationType="fadeLeft" delay={0.5} className="sticky min-h-170 top-10 bg-[#FAF9F0] border border-primary/30 rounded-xl md:rounded-[38px">
               <div className="relative h-105 w-full ">
                 <Image
                   src="/user.png"
                   alt="Winner"
                   fill
-                  className="w-full h-full object-cover relative -translate-y-16  "
+                  className="w-full h-full object-cover relative md:-translate-y-16  "
                 />
 
               </div>

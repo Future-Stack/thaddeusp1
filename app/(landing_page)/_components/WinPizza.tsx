@@ -41,7 +41,7 @@ const WinPizza = () => {
                     </AnimationWrapper>
                     <AnimationWrapper animationType="fadeUp" delay={0.2}>
                         <p className="text-xl text-gray-500 font-medium mb-10">
-                            Join your local lottery for just $1 per ticket
+                            Join your local raffle for just $1 per ticket
                         </p>
                     </AnimationWrapper>
 

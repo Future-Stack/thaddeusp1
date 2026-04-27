@@ -96,7 +96,7 @@ const LotteryEventPage = () => {
                 </AnimationWrapper>
 
                 <AnimationWrapper animationType="fadeLeft">
-                    <button 
+                    <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="bg-[#111827] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors shadow-sm"
                     >
@@ -107,8 +107,31 @@ const LotteryEventPage = () => {
             </div>
 
             {/* Tabs Section */}
+            {/* <div className="border-b border-gray-200">
+                <div className="flex gap-8 overflow-x-scroll  ">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`pb-4 text-sm font-medium transition-all relative min-w-max ${activeTab === tab.id
+                                ? 'text-[#FF4D12]'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            {tab.label} ({tab.count})
+                            {activeTab === tab.id && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FF4D12]"
+                                />
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div> */}
+            {/* Tabs Section */}
             <div className="border-b border-gray-200">
-                <div className="flex gap-8 overflow-x-auto no-scrollbar">
+                <div className="flex flex-nowrap gap-8 overflow-x-auto ">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -140,9 +163,9 @@ const LotteryEventPage = () => {
             </div>
 
             {/* Modal */}
-            <CreateEventModal 
-                isOpen={isCreateModalOpen} 
-                onClose={() => setIsCreateModalOpen(false)} 
+            <CreateEventModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
             />
         </div>
     );
@@ -174,7 +197,7 @@ const EventCard = ({ event }: { event: LotteryEvent }) => {
                             Edit
                         </button>
                         {event.status === 'Active' && (
-                            <button 
+                            <button
                                 onClick={handleSelectWinner}
                                 className="bg-[#FF4D12] text-white px-5 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors"
                             >

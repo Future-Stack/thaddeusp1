@@ -14,11 +14,11 @@ function Navbar() {
       <div className="container mx-auto px-4 md:px-0">
         <div className='flex justify-between items-center'>
           <div>
-            <Link href="/" className='block w-47.5 h-18.75'>
+            <Link href="/" className='block md:w-47.5 md:h-18.75'>
               <Image
                 src="/logo/logo.png"
                 alt="WinAPizza!"
-                className='w-full h-full   object-cover'
+                className='w-30 md:w-full h-full   object-cover'
                 width={200}
                 height={75}
               />
@@ -47,9 +47,9 @@ function Navbar() {
                     className="object-cover"
                   />
                 </div>
-                <div className="flex flex-col">
+                <div className="hidden md:flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-[#1C274C] text-[15px] leading-tight">Savannah Nguyen</span>
+                    <span className="font-bold  text-[#1C274C] text-[15px] leading-tight">Savannah Nguyen</span>
                     <svg
                       width="10"
                       height="6"

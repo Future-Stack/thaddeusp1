@@ -37,7 +37,7 @@ const SettingItem = ({ title, description, enabled, setEnabled }: {
 );
 
 const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="bg-white rounded-4xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8">
+  <div className="bg-white rounded-xl p-4 md:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-gray-100 mb-8">
     <h3 className="text-2xl font-bold mb-6 text-gray-900 px-2">{title}</h3>
     <div className="space-y-4">
       {children}
@@ -64,8 +64,8 @@ export default function UserSettings() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFF9F0] font-inter selection:bg-orange-200 py-10">
-      <div className="max-w-6xl mx-auto px-6">
+    <div className="min-h-screen bg-[#FFF9F0] font-inter selection:bg-orange-200 py-2 md:py-10">
+      <div className="w-full px-4 md:px-6">
         
         {/* Header */}
         <AnimationWrapper animationType="fadeDown" className="mb-10">
