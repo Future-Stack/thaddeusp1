@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import Link from 'next/link';
 
 const ChangeLife = () => {
     return (
@@ -19,8 +20,7 @@ const ChangeLife = () => {
                         {/* Gradient Overlay */}
                         <div
                             className="absolute inset-0"
-                            style={{
-                                // background: 'linear-gradient(0deg, rgba(37, 36, 36, 0.30) 0%, rgba(37, 36, 36, 0.30) 100%), linear-gradient(90deg, #FF6900 0%, #FB2C36 70%)',
+                            style={{ 
                                 background: 'linear-gradient(90deg, rgba(255, 105, 0, 0.85) 0%, rgba(251, 44, 54, 0.85) 80%)',
                             }}
                         />
@@ -42,9 +42,9 @@ const ChangeLife = () => {
                             </AnimationWrapper>
 
                             <AnimationWrapper animationType="fadeUp" delay={0.4}>
-                                <button className="bg-white text-[#FB2C36] font-bold px-8 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                <Link href="/ticket" className="bg-white text-[#FB2C36] font-bold px-8 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg hover:shadow-xl">
                                     Start Helping Today
-                                </button>
+                                </Link>
                             </AnimationWrapper>
                         </div>
                     </div>

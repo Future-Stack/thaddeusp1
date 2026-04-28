@@ -50,7 +50,7 @@ const VendorList = () => {
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 className="text-3xl font-bold text-[#111827]">Vendor Manager</h1>
-                <button 
+                <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="flex items-center gap-2 px-6 py-3 bg-[#10B981] text-white rounded-xl text-sm font-bold hover:bg-[#059669] transition-all shadow-lg shadow-emerald-100"
                 >
@@ -63,9 +63,9 @@ const VendorList = () => {
             <div className="flex flex-wrap items-center gap-4">
                 <div className="relative w-full sm:w-80">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                    <input 
-                        type="text" 
-                        placeholder="Search by name or email..." 
+                    <input
+                        type="text"
+                        placeholder="Search by name or email..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 shadow-sm transition-all"
@@ -89,9 +89,9 @@ const VendorList = () => {
             </div>
 
             {/* Add Vendor Modal */}
-            <AddVendorModal 
-                isOpen={isAddModalOpen} 
-                onClose={() => setIsAddModalOpen(false)} 
+            <AddVendorModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
             />
         </div>
     );

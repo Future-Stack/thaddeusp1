@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import Link from 'next/link';
 
 const ImpactCTA = () => {
     return (
@@ -35,10 +36,10 @@ const ImpactCTA = () => {
                         {/* CTA Button and Pulse */}
                         <AnimationWrapper animationType="fadeUp" delay={0.4}>
                             <div className="inline-flex flex-col items-center">
-                                <button className="group relative bg-white text-[#F54900] font-semibold cursor-pointer px-12 py-5 rounded-2xl text-xl hover:bg-white transform hover:scale-105 active:scale-95  transition-all duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.15)] mb-6">
+                                <Link href="/ticket" className="group relative bg-white text-[#F54900] font-semibold cursor-pointer px-12 py-5 rounded-2xl text-xl hover:bg-white transform hover:scale-105 active:scale-95  transition-all duration-300 shadow-[0_20px_40px_rgba(0,0,0,0.15)] mb-6">
                                      Buy Tickets Now 
                                  
-                                </button>
+                                </Link>
                                 <div className="flex items-center gap-3 py-2 px-4     rounded-full text-sm md:text-[14px] font-semibold text-white/90 border border-white/10">
                                     <span className="relative flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00FF85] opacity-75"></span>

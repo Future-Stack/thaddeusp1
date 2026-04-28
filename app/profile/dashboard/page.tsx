@@ -6,6 +6,7 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 import { motion } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 import BuyTicketsModal from './BuyTicketsModal';
+import Link from 'next/link';
 
 // Mock Data
 const activeTickets = ["TKT-NY-1247", "TKT-NY-1248", "TKT-NY-1249"];
@@ -90,16 +91,14 @@ export default function UserDashboard() {
                     <p className="text-[#0A0A0A] text-[18px] mt-1">You have a prize voucher ready to claim</p>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
+                <Link href="/profile/my-vouchers" 
                   className="bg-white text-[#059669] font-bold px-8 py-4 rounded-2xl shadow-md flex items-center gap-3 hover:shadow-xl transition-all"
                 >
                   View & Download Voucher
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
-                </motion.button>
+                </Link>
               </div>
             </AnimationWrapper>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
