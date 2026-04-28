@@ -1,5 +1,6 @@
 import React from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import Link from 'next/link';
 
 interface RegionCardProps {
     name: string;
@@ -43,9 +44,9 @@ const RegionCard: React.FC<RegionCardProps> = ({
                         Select Winner Now
                     </button>
                 )}
-                <button className="w-full bg-[#F3F4F6] text-[#4B5563] py-2.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors">
+                <Link href="/admin/select-winners" className="w-full block text-center bg-[#F3F4F6] text-[#4B5563] py-2.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors">
                     View Details
-                </button>
+                </Link>
             </div>
 
             <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-center">
