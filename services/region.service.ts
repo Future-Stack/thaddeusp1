@@ -20,8 +20,8 @@ export interface RegionsResponse {
 }
 
 export const regionService = {
-    getAll: async (): Promise<RegionsResponse> => {
-        const response = await apiClient.get('/regions');
-        return response.data;
+    getAll: async (): Promise<Region[]> => {
+        const response = await apiClient.get<RegionsResponse>('/regions');
+        return response.data.data;
     },
 };

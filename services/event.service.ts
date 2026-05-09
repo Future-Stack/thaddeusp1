@@ -32,6 +32,7 @@ export interface Event {
   prizeValue: number;
   maxTickets: number;
   isAutoDraw: boolean;
+  winner?: string;
   createdAt: string;
   updatedAt: string;
   region: Region;

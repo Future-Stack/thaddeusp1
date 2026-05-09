@@ -1,9 +1,29 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { authService, LoginPayload } from '@/services/auth.service';
+import { authService, LoginPayload, SignUpPayload } from '@/services/auth.service';
 import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { jwtDecode } from 'jwt-decode';
+
+export const useSignUp = () => {
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (payload: SignUpPayload) => authService.signUp(payload),
+    onSuccess: (response) => {
+      if (response.data.success) {
+        toast.success(response.data.message || 'Registration successful! Please log in.');
+        router.push('/login');
+      } else {
+        toast.error(response.data.message || 'Registration failed');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Something went wrong during registration';
+      toast.error(message);
+    },
+  });
+};
 
 export const useLogin = () => {
   const router = useRouter();
@@ -28,9 +48,9 @@ export const useLogin = () => {
         } catch (e) {
           console.error('Failed to decode token:', e);
         }
-        
+
         toast.success(response.data.result.message || 'Login successful');
-        
+
         // Fetch user profile after login
         authService.getMe().then((profileResponse) => {
           if (profileResponse.data.success) {
@@ -63,17 +83,17 @@ export const useAdminLogin = () => {
     onSuccess: async (response) => {
       if (response.data.success) {
         const { tokens } = response.data.result;
-        
+
         // 1. Set tokens temporarily to fetch profile
         setTokens(tokens);
 
         try {
           // 2. Fetch full profile to verify role
           const profileResponse = await authService.getMe();
-          
+
           if (profileResponse.data.success) {
             const user = profileResponse.data.user;
-            
+
             if (user.role !== 'ADMIN') {
               // 3. If not admin, logout and show error
               setTokens({ accessToken: '', refreshToken: '' }); // Clear tokens
@@ -85,12 +105,12 @@ export const useAdminLogin = () => {
             // 4. If admin, set full user state and redirect
             setUser(user);
             setRole(user.role);
-            
+
             const decoded: any = jwtDecode(tokens.accessToken);
             if (decoded.sub) {
               setUserId(decoded.sub);
             }
-            
+
             toast.success('Admin login successful');
             router.push('/admin');
           } else {
@@ -128,4 +148,16 @@ export const useGetMe = () => {
     },
     enabled: !!useAppStore.getState().accessToken,
   });
+};
+export const useLogout = () => {
+  const router = useRouter();
+  const logout = useAppStore((state) => state.logout);
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Logged out successfully');
+    router.push('/');
+  };
+
+  return { logout: handleLogout };
 };

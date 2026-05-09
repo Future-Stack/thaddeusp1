@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { vendorService, Vendor } from '@/services/vendor.service';
+import { vendorService, Vendor, CreateVendorDto, UpdateVendorDto } from '@/services/vendor.service';
 
 export const useVendors = () => {
   return useQuery({
@@ -31,7 +31,7 @@ export const useUpdateVendor = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Vendor> }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateVendorDto }) =>
       vendorService.update(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['vendors'] });

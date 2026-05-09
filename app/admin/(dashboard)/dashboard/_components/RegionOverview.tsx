@@ -110,7 +110,7 @@ const RegionOverview = () => {
         return (
             <div className="p-8 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
                 <p className="text-red-500 font-medium mb-4">Error loading regions: {(error as Error).message}</p>
-                <button 
+                <button
                     onClick={() => refetch()}
                     className="px-4 py-2 bg-[#111827] text-white rounded-lg text-sm font-bold hover:bg-gray-800 transition-colors"
                 >
@@ -120,7 +120,7 @@ const RegionOverview = () => {
         );
     }
 
-    const regions = data?.data || [];
+    const regions = data || [];
 
     return (
         <div>
@@ -136,15 +136,15 @@ const RegionOverview = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regions.map((region: Region, index: number) => (
-                    <RegionCard 
-                        key={region.id} 
+                    <RegionCard
+                        key={region.id}
                         name={region.name}
                         users={region._count.users}
                         vendors={region._count.vendors}
                         events={region._count.events}
                         updatedAt={region.updatedAt}
                         canSelectWinner={index % 3 === 2} // Mimicking the original logic for demo
-                        delay={0.6 + index * 0.1} 
+                        delay={0.6 + index * 0.1}
                     />
                 ))}
             </div>

@@ -13,30 +13,42 @@ import { Loader2 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+interface EventFormValues {
+  name: string;
+  description: string;
+  regionId: string;
+  drawDate: Date;
+  ticketOpen: Date;
+  ticketClose: Date;
+  ticketPrice: number;
+  prizeValue: number;
+  maxTickets: number;
+  isAutoDraw: boolean;
+}
+
 const eventSchema = z.object({
   name: z.string().min(3, "Event name must be at least 3 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
   regionId: z.string().min(1, "Please select a region"),
-  drawDate: z.date({ required_error: "Draw date is required" }),
-  ticketOpen: z.date({ required_error: "Ticket open date is required" }),
-  ticketClose: z.date({ required_error: "Ticket close date is required" }),
-  ticketPrice: z.coerce.number().min(0, "Ticket price cannot be negative"),
-  prizeValue: z.coerce.number().min(0, "Prize value cannot be negative"),
-  maxTickets: z.coerce.number().min(1, "Max tickets must be at least 1"),
-  isAutoDraw: z.boolean().default(false),
+  drawDate: z.date({ message: "Draw date is required" }),
+  ticketOpen: z.date({ message: "Ticket open date is required" }),
+  ticketClose: z.date({ message: "Ticket close date is required" }),
+  ticketPrice: z.number().min(0, "Ticket price cannot be negative"),
+  prizeValue: z.number().min(0, "Prize value cannot be negative"),
+  maxTickets: z.number().min(1, "Max tickets must be at least 1"),
+  isAutoDraw: z.boolean(),
 });
-
-type EventFormValues = z.infer<typeof eventSchema>;
 
 interface EditEventModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave?: () => void;
   event: Event | null;
 }
 
-const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event }) => {
+const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave, event }) => {
   const { data: regionsData, isLoading: regionsLoading } = useRegions();
-  const regions = regionsData?.data || [];
+  const regions = regionsData || [];
 
   const { mutate: updateEvent, isPending } = useUpdateEvent();
 
@@ -81,7 +93,11 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
 
     updateEvent({ id: event.id, data: payload }, {
       onSuccess: () => {
-        onClose();
+        if (onSave) {
+          onSave();
+        } else {
+          onClose();
+        }
       },
     });
   };
@@ -156,7 +172,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                 render={({ field }) => (
                   <DatePicker
                     selected={field.value}
-                    onChange={(date) => field.onChange(date)}
+                    onChange={(date: Date | null) => field.onChange(date)}
                     showTimeSelect
                     dateFormat="MMMM d, yyyy h:mm aa"
                     placeholderText="Select draw date and time"
@@ -187,7 +203,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                   render={({ field }) => (
                     <DatePicker
                       selected={field.value}
-                      onChange={(date) => field.onChange(date)}
+                      onChange={(date: Date | null) => field.onChange(date)}
                       showTimeSelect
                       dateFormat="MMMM d, yyyy h:mm aa"
                       placeholderText="Select opening time"
@@ -215,7 +231,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                   render={({ field }) => (
                     <DatePicker
                       selected={field.value}
-                      onChange={(date) => field.onChange(date)}
+                      onChange={(date: Date | null) => field.onChange(date)}
                       showTimeSelect
                       dateFormat="MMMM d, yyyy h:mm aa"
                       placeholderText="Select closing time"
@@ -240,7 +256,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               <label className="block text-sm font-bold text-[#111827] mb-2">Ticket Price ($)</label>
               <input
                 type="number"
-                {...register("ticketPrice")}
+                {...register("ticketPrice", { valueAsNumber: true })}
                 className={`w-full px-4 py-3 rounded-xl border ${errors.ticketPrice ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
               {errors.ticketPrice && <p className="text-red-500 text-xs mt-1">{errors.ticketPrice.message}</p>}
@@ -249,7 +265,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               <label className="block text-sm font-bold text-[#111827] mb-2">Prize Value ($)</label>
               <input
                 type="number"
-                {...register("prizeValue")}
+                {...register("prizeValue", { valueAsNumber: true })}
                 className={`w-full px-4 py-3 rounded-xl border ${errors.prizeValue ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
               {errors.prizeValue && <p className="text-red-500 text-xs mt-1">{errors.prizeValue.message}</p>}
@@ -261,7 +277,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
             <label className="block text-sm font-bold text-[#111827] mb-2">Maximum Tickets</label>
             <input
               type="number"
-              {...register("maxTickets")}
+              {...register("maxTickets", { valueAsNumber: true })}
               className={`w-full px-4 py-3 rounded-xl border ${errors.maxTickets ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
             />
             {errors.maxTickets && <p className="text-red-500 text-xs mt-1">{errors.maxTickets.message}</p>}
