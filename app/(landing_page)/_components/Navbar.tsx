@@ -94,18 +94,21 @@ function Navbar() {
                         transition={{ duration: 0.2, ease: "easeOut" }}
                         className="absolute right-0 mt-3 w-56 bg-white rounded-2xl border border-gray-50 py-2 z-60 overflow-hidden shadow-2xl border-t border-t-gray-400"
                       >
-                        <Link 
-                          href="/profile" 
+                        {role !== 'ADMIN' && (<Link
+                          href="/profile"
                           className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-[#FF5722]"></span>
                           Profile Settings
-                        </Link>
+                        </Link>)}
+
+
+
 
                         {role === 'ADMIN' && (
-                          <Link 
-                            href="/admin" 
+                          <Link
+                            href="/admin"
                             className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2"
                             onClick={() => setIsDropdownOpen(false)}
                           >
@@ -115,7 +118,7 @@ function Navbar() {
                         )}
 
                         <div className="border-t border-gray-50 mt-1 pt-1">
-                          <button 
+                          <button
                             onClick={handleLogout}
                             className="w-full text-left px-4 py-2 text-[14px] text-red-500 hover:bg-red-50 transition-colors font-medium"
                           >

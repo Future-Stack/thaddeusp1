@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AppState {
   user: any | null;
@@ -44,11 +44,11 @@ export const useAppStore = create<AppState>()(
         }),
     }),
     {
-      name: 'app-storage',
+      name: "app-storage",
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
         state?.setIsLoading(false);
       },
-    }
-  )
+    },
+  ),
 );

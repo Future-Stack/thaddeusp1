@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { motion } from 'framer-motion';
 import CreateEventModal from '../dashboard/_components/CreateEventModal';
+import EditEventModal from './_components/EditEventModal';
 
 type EventStatus = 'Active' | 'Upcoming' | 'Completed';
 
@@ -72,16 +73,19 @@ const mockEvents: LotteryEvent[] = [
 const LotteryEventPage = () => {
     const [activeTab, setActiveTab] = useState<'All' | EventStatus>('All');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingEvent, setEditingEvent] = useState<LotteryEvent | null>(null);
+    const [events, setEvents] = useState<LotteryEvent[]>(mockEvents);
 
     const filteredEvents = activeTab === 'All'
-        ? mockEvents
-        : mockEvents.filter(event => event.status === activeTab);
+        ? events
+        : events.filter(event => event.status === activeTab);
 
     const tabs = [
-        { id: 'All', label: 'All Events', count: mockEvents.length },
-        { id: 'Active', label: 'Active', count: mockEvents.filter(e => e.status === 'Active').length },
-        { id: 'Upcoming', label: 'Upcoming', count: mockEvents.filter(e => e.status === 'Upcoming').length },
-        { id: 'Completed', label: 'Completed', count: mockEvents.filter(e => e.status === 'Completed').length },
+        { id: 'All', label: 'All Events', count: events.length },
+        { id: 'Active', label: 'Active', count: events.filter(e => e.status === 'Active').length },
+        { id: 'Upcoming', label: 'Upcoming', count: events.filter(e => e.status === 'Upcoming').length },
+        { id: 'Completed', label: 'Completed', count: events.filter(e => e.status === 'Completed').length },
     ];
 
     return (
@@ -135,21 +139,38 @@ const LotteryEventPage = () => {
             <div className="space-y-6">
                 {filteredEvents.map((event, index) => (
                     <AnimationWrapper key={event.id} animationType="fadeUp" delay={index * 0.1}>
-                        <EventCard event={event} />
+                        <EventCard
+                            event={event}
+                            onEdit={(evt) => {
+                                setEditingEvent(evt);
+                                setIsEditModalOpen(true);
+                            }}
+                        />
                     </AnimationWrapper>
                 ))}
             </div>
 
-            {/* Modal */}
+            {/* Create Modal */}
             <CreateEventModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
+            />
+
+            {/* Edit Modal */}
+            <EditEventModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                event={editingEvent}
+                onSave={(updated) => {
+                    setEvents(prev => prev.map(e => e.id === updated.id ? updated : e));
+                    setIsEditModalOpen(false);
+                }}
             />
         </div>
     );
 };
 
-const EventCard = ({ event }: { event: LotteryEvent }) => {
+const EventCard = ({ event, onEdit }: { event: LotteryEvent; onEdit: (event: LotteryEvent) => void }) => {
     const handleSelectWinner = () => {
         alert(`Selecting winner for ${event.title}...`);
     };
@@ -171,7 +192,9 @@ const EventCard = ({ event }: { event: LotteryEvent }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button className="bg-[#2563EB] text-white px-5 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
+                        <button
+                            onClick={() => onEdit(event)}
+                            className="bg-[#2563EB] text-white px-5 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
                             Edit
                         </button>
                         {event.status === 'Active' && (

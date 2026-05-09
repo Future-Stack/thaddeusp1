@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Modal from "@/components/Modal";
 import { useRegions } from "@/hooks/useRegions";
 import { Region } from "@/services/region.service";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useUpdateEvent } from "@/hooks/useEvents";
-import { CreateEventDto, Event } from "@/services/event.service";
+import { useCreateEvent } from "@/hooks/useEvents";
+import { CreateEventDto } from "@/services/event.service";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,17 +29,16 @@ const eventSchema = z.object({
 
 type EventFormValues = z.infer<typeof eventSchema>;
 
-interface EditEventModalProps {
+interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  event: Event | null;
 }
 
-const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event }) => {
+const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose }) => {
   const { data: regionsData, isLoading: regionsLoading } = useRegions();
   const regions = regionsData?.data || [];
-
-  const { mutate: updateEvent, isPending } = useUpdateEvent();
+  
+  const { mutate: createEvent, isPending } = useCreateEvent();
 
   const {
     register,
@@ -48,39 +48,26 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
     formState: { errors },
   } = useForm<EventFormValues>({
     resolver: zodResolver(eventSchema),
+    defaultValues: {
+      isAutoDraw: false,
+      ticketPrice: 10,
+      prizeValue: 1000,
+      maxTickets: 500,
+    },
   });
 
-  // Sync form when event changes
-  useEffect(() => {
-    if (event && isOpen) {
-      reset({
-        name: event.name,
-        description: event.description,
-        regionId: event.regionId,
-        drawDate: new Date(event.drawDate),
-        ticketOpen: new Date(event.ticketOpen),
-        ticketClose: new Date(event.ticketClose),
-        ticketPrice: event.ticketPrice,
-        prizeValue: event.prizeValue,
-        maxTickets: event.maxTickets,
-        isAutoDraw: event.isAutoDraw,
-      });
-    }
-  }, [event, isOpen, reset]);
-
   const onSubmit = (data: EventFormValues) => {
-    if (!event) return;
-
     // Convert dates to ISO format
-    const payload: Partial<CreateEventDto> = {
+    const payload: CreateEventDto = {
       ...data,
       drawDate: new Date(data.drawDate).toISOString(),
       ticketOpen: new Date(data.ticketOpen).toISOString(),
       ticketClose: new Date(data.ticketClose).toISOString(),
     };
 
-    updateEvent({ id: event.id, data: payload }, {
+    createEvent(payload, {
       onSuccess: () => {
+        reset();
         onClose();
       },
     });
@@ -91,14 +78,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-[#111827]/10 flex items-center justify-center">
-              <EditIcon />
-            </div>
-            <h2 className="text-2xl font-bold text-[#111827]">Edit Event</h2>
-          </div>
+          <h2 className="text-2xl font-bold text-[#111827] mb-2">Create Lottery Event</h2>
           <p className="text-gray-500 text-sm">
-            Update the details for <span className="font-semibold text-[#111827]">{event?.name}</span>
+            Set up a new lottery draw for a specific region with custom dates and times
           </p>
         </div>
 
@@ -126,6 +108,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
             <div className="relative">
               <select
                 {...register("regionId")}
+                defaultValue=""
                 className={`w-full px-4 py-3 rounded-xl border ${errors.regionId ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
               >
                 <option value="" disabled>
@@ -162,8 +145,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                     placeholderText="Select draw date and time"
                     className={`w-full px-4 py-3 rounded-xl border ${errors.drawDate ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
                     wrapperClassName="w-full"
-                    popperPlacement="bottom-end"
-                    portalId="edit-datepicker-portal"
                   />
                 )}
               />
@@ -172,6 +153,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               </div>
             </div>
             {errors.drawDate && <p className="text-red-500 text-xs mt-1">{errors.drawDate.message}</p>}
+            <p className="mt-2 text-[11px] text-gray-400">The date when the winner will be selected</p>
           </div>
 
           {/* Ticket Sales Window */}
@@ -193,8 +175,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                       placeholderText="Select opening time"
                       className={`w-full px-4 py-3 rounded-xl border ${errors.ticketOpen ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
                       wrapperClassName="w-full"
-                      popperPlacement="bottom-end"
-                      portalId="edit-datepicker-portal"
                     />
                   )}
                 />
@@ -221,8 +201,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
                       placeholderText="Select closing time"
                       className={`w-full px-4 py-3 rounded-xl border ${errors.ticketClose ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
                       wrapperClassName="w-full"
-                      popperPlacement="bottom-end"
-                      portalId="edit-datepicker-portal"
                     />
                   )}
                 />
@@ -241,6 +219,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               <input
                 type="number"
                 {...register("ticketPrice")}
+                placeholder="10"
                 className={`w-full px-4 py-3 rounded-xl border ${errors.ticketPrice ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
               {errors.ticketPrice && <p className="text-red-500 text-xs mt-1">{errors.ticketPrice.message}</p>}
@@ -250,6 +229,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               <input
                 type="number"
                 {...register("prizeValue")}
+                placeholder="1000"
                 className={`w-full px-4 py-3 rounded-xl border ${errors.prizeValue ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
               {errors.prizeValue && <p className="text-red-500 text-xs mt-1">{errors.prizeValue.message}</p>}
@@ -262,22 +242,25 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
             <input
               type="number"
               {...register("maxTickets")}
+              placeholder="500"
               className={`w-full px-4 py-3 rounded-xl border ${errors.maxTickets ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
             />
             {errors.maxTickets && <p className="text-red-500 text-xs mt-1">{errors.maxTickets.message}</p>}
+            <p className="mt-2 text-[11px] text-gray-400">Set a maximum number of tickets that can be sold for this event</p>
           </div>
 
           {/* Auto Draw Toggle */}
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
-              id="editIsAutoDraw"
+              id="isAutoDraw"
               {...register("isAutoDraw")}
               className="w-4 h-4 rounded border-gray-300 text-[#111827] focus:ring-[#111827]"
             />
-            <label htmlFor="editIsAutoDraw" className="text-sm font-bold text-[#111827] cursor-pointer">
+            <label htmlFor="isAutoDraw" className="text-sm font-bold text-[#111827] cursor-pointer">
               Enable Automatic Draw
             </label>
+            <p className="text-[11px] text-gray-400 ml-auto">System will automatically pick a winner on draw date</p>
           </div>
 
           {/* Description */}
@@ -285,6 +268,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
             <label className="block text-sm font-bold text-[#111827] mb-2">Event Description</label>
             <textarea
               {...register("description")}
+              placeholder="Add any special details about this event..."
               rows={4}
               className={`w-full px-4 py-3 rounded-xl border ${errors.description ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm resize-none`}
             />
@@ -299,7 +283,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
               className="flex-1 bg-[#111827] text-white py-4 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isPending ? "Updating..." : "Update Event"}
+              {isPending ? "Creating..." : "Create Event"}
             </button>
             <button
               type="button"
@@ -314,13 +298,6 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, event 
     </Modal>
   );
 };
-
-const EditIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
 
 const ChevronDownIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -337,6 +314,8 @@ const CalendarIcon = () => (
   </svg>
 );
 
+export default CreateEventModal;
+
 // Custom styles for DatePicker
 const datePickerStyles = `
   .react-datepicker-wrapper {
@@ -345,41 +324,36 @@ const datePickerStyles = `
   .react-datepicker__input-container input {
     width: 100%;
   }
-  .react-datepicker-popper {
-    z-index: 9999 !important;
-  }
   .react-datepicker {
     font-family: inherit;
-    border-radius: 16px;
-    border: 1px solid #F3F4F6;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
   .react-datepicker__header {
-    background-color: white;
-    border-bottom: 1px solid #F3F4F6;
+    background-color: #F9FAFB;
+    border-bottom: 1px solid #E5E7EB;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding-top: 12px;
   }
   .react-datepicker__day--selected {
     background-color: #111827 !important;
     border-radius: 8px;
   }
+  .react-datepicker__day:hover {
+    border-radius: 8px;
+  }
+  .react-datepicker__time-container {
+    border-left: 1px solid #E5E7EB;
+  }
+  .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+    background-color: #111827 !important;
+  }
 `;
 
 if (typeof document !== 'undefined') {
-  const portalDiv = document.getElementById('edit-datepicker-portal');
-  if (!portalDiv) {
-    const div = document.createElement('div');
-    div.id = 'edit-datepicker-portal';
-    document.body.appendChild(div);
-  }
-
-  const styleId = 'edit-datepicker-styles';
-  let style = document.getElementById(styleId) as HTMLStyleElement;
-  if (!style) {
-    style = document.createElement('style');
-    style.id = styleId;
-    document.head.appendChild(style);
-  }
+  const style = document.createElement('style');
   style.innerHTML = datePickerStyles;
+  document.head.appendChild(style);
 }
-
-export default EditEventModal;

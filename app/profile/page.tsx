@@ -1,9 +1,9 @@
-import React from 'react'
-import PersonalInfoCard from './_components/PersonalInfoCard'
-import StatsCard from './_components/StatsCard'
-import QuickActionsCard from './_components/QuickActionsCard'
-import AccountSecurityCard from './_components/AccountSecurityCard'
-import AnimationWrapper from '@/components/AnimationWrapper'
+import React from "react";
+import PersonalInfoCard from "./_components/PersonalInfoCard";
+import StatsCard from "./_components/StatsCard";
+import QuickActionsCard from "./_components/QuickActionsCard";
+import AccountSecurityCard from "./_components/AccountSecurityCard";
+import AnimationWrapper from "@/components/AnimationWrapper";
 
 const ProfilePage = () => {
   return (
@@ -20,14 +20,22 @@ const ProfilePage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Personal Information */}
         <div className="lg:col-span-5">
-          <AnimationWrapper animationType="fadeRight" delay={0.1} className="h-full">
+          <AnimationWrapper
+            animationType="fadeRight"
+            delay={0.1}
+            className="h-full"
+          >
             <PersonalInfoCard />
           </AnimationWrapper>
         </div>
 
         {/* Middle Column: My Stats */}
         <div className="lg:col-span-3">
-          <AnimationWrapper animationType="fadeUp" delay={0.2} className="h-full">
+          <AnimationWrapper
+            animationType="fadeUp"
+            delay={0.2}
+            className="h-full"
+          >
             <StatsCard />
           </AnimationWrapper>
         </div>
@@ -43,7 +51,7 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;
