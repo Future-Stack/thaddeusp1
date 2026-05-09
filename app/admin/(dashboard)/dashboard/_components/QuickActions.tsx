@@ -23,7 +23,7 @@ const QuickActions = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-4">
-                        <button 
+                        <button
                             onClick={() => setIsCreateModalOpen(true)}
                             className="flex items-center gap-2 px-5 py-2.5 bg-[#111827] text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
                         >
@@ -42,9 +42,9 @@ const QuickActions = () => {
                 </div>
             </AnimationWrapper>
 
-            <CreateEventModal 
-                isOpen={isCreateModalOpen} 
-                onClose={() => setIsCreateModalOpen(false)} 
+            <CreateEventModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
             />
         </>
     );

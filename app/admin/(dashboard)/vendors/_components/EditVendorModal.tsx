@@ -1,47 +1,76 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useEffect } from "react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import Modal from "@/components/Modal";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import { useUpdateVendor } from "@/hooks/useVendors";
+import { useRegions } from "@/hooks/useRegions";
+import { Vendor } from "@/services/vendor.service";
+
+const vendorSchema = z.object({
+  name: z.string().min(1, "Vendor name is required"),
+  address: z.string().min(1, "Address is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  voucherValue: z.number().min(0, "Voucher value must be at least 0"),
+  regionId: z.string().min(1, "Region is required"),
+});
+
+type VendorFormValues = z.infer<typeof vendorSchema>;
 
 interface EditVendorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vendor: {
-    name: string;
-    city: string;
-    address: string;
-    phone: string;
-    voucherValue: string;
-  };
+  vendor: Vendor | null;
 }
 
 const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vendor }) => {
-  const [formData, setFormData] = useState({
-    region: vendor.city,
-    name: vendor.name,
-    address: vendor.address,
-    phone: vendor.phone,
-    voucherValue: vendor.voucherValue.replace("$", ""),
+  const { data: regions, isLoading: isRegionsLoading } = useRegions();
+  const { mutate: updateVendor, isPending } = useUpdateVendor();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<VendorFormValues>({
+    resolver: zodResolver(vendorSchema),
   });
 
   // Update form data when vendor prop changes
   useEffect(() => {
-    setFormData({
-      region: vendor.city,
-      name: vendor.name,
-      address: vendor.address,
-      phone: vendor.phone,
-      voucherValue: vendor.voucherValue.replace("$", ""),
-    });
-  }, [vendor]);
+    if (vendor) {
+      reset({
+        regionId: vendor.regionId,
+        name: vendor.name,
+        address: vendor.address,
+        phone: vendor.phone,
+        voucherValue: vendor.voucherValue ? Number(vendor.voucherValue.replace("$", "").trim()) : 0,
+      });
+    }
+  }, [vendor, reset]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle submission logic here
-    console.log("Updating vendor data:", formData);
-    onClose();
+  const onSubmit = (data: VendorFormValues) => {
+    if (!vendor) return;
+
+    updateVendor(
+      { id: vendor.id, data },
+      {
+        onSuccess: () => {
+          toast.success("Vendor updated successfully");
+          onClose();
+        },
+        onError: (error: any) => {
+          toast.error(error?.response?.data?.message || "Failed to update vendor");
+        },
+      }
+    );
   };
+
+  if (!vendor) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-0">
@@ -53,25 +82,34 @@ const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vend
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Region */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-[#111827]">Region *</label>
             <div className="relative">
               <select
-                className="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] appearance-none focus:ring-2 focus:ring-gray-200 transition-all outline-none"
-                value={formData.region}
-                onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                required
+                {...register("regionId")}
+                className={`w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] appearance-none focus:ring-2 focus:ring-gray-200 transition-all outline-none ${errors.regionId ? "ring-2 ring-red-500" : ""
+                  }`}
+                disabled={isRegionsLoading}
               >
-                <option value="" disabled>Select a region</option>
-                <option value="New York">New York</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="Houston">Houston</option>
-                <option value="Chicago">Chicago</option>
+                <option value="" disabled>
+                  {isRegionsLoading ? "Loading regions..." : "Select a region"}
+                </option>
+                {regions?.map((region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}
+                  </option>
+                ))}
               </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none" size={18} />
+              <ChevronDown
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none"
+                size={18}
+              />
             </div>
+            {errors.regionId && (
+              <p className="text-xs text-red-500 font-medium">{errors.regionId.message}</p>
+            )}
           </div>
 
           {/* Vendor Name */}
@@ -80,11 +118,13 @@ const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vend
             <input
               type="text"
               placeholder="e.g., Joe's Pizza NYC"
-              className="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
+              {...register("name")}
+              className={`w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none ${errors.name ? "ring-2 ring-red-500" : ""
+                }`}
             />
+            {errors.name && (
+              <p className="text-xs text-red-500 font-medium">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Address */}
@@ -93,11 +133,13 @@ const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vend
             <input
               type="text"
               placeholder="123 Main St, City, State ZIP"
-              className="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              required
+              {...register("address")}
+              className={`w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none ${errors.address ? "ring-2 ring-red-500" : ""
+                }`}
             />
+            {errors.address && (
+              <p className="text-xs text-red-500 font-medium">{errors.address.message}</p>
+            )}
           </div>
 
           {/* Phone Number */}
@@ -106,23 +148,28 @@ const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vend
             <input
               type="tel"
               placeholder="(555) 123-4567"
-              className="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              required
+              {...register("phone")}
+              className={`w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none ${errors.phone ? "ring-2 ring-red-500" : ""
+                }`}
             />
+            {errors.phone && (
+              <p className="text-xs text-red-500 font-medium">{errors.phone.message}</p>
+            )}
           </div>
 
           {/* Voucher Value */}
           <div className="space-y-2">
             <label className="text-sm font-semibold text-[#111827]">Voucher Value ($)</label>
             <input
-              type="text"
+              type="number"
               placeholder="25"
-              className="w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none"
-              value={formData.voucherValue}
-              onChange={(e) => setFormData({ ...formData, voucherValue: e.target.value })}
+              {...register("voucherValue", { valueAsNumber: true })}
+              className={`w-full bg-[#F3F4F6] border-none rounded-xl px-4 py-3 text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-gray-200 transition-all outline-none ${errors.voucherValue ? "ring-2 ring-red-500" : ""
+                }`}
             />
+            {errors.voucherValue && (
+              <p className="text-xs text-red-500 font-medium">{errors.voucherValue.message}</p>
+            )}
           </div>
 
           {/* Actions */}
@@ -130,15 +177,24 @@ const EditVendorModal: React.FC<EditVendorModalProps> = ({ isOpen, onClose, vend
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border border-gray-200 rounded-xl text-sm font-bold text-[#111827] hover:bg-gray-50 transition-all"
+              className="px-6 py-3 border border-gray-200 rounded-xl text-sm font-bold text-[#111827] hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isPending}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-[#020617] text-white rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-lg"
+              disabled={isPending}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#020617] text-white rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed min-w-[140px]"
             >
-              Update Vendor
+              {isPending ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  <span>Updating...</span>
+                </>
+              ) : (
+                "Update Vendor"
+              )}
             </button>
           </div>
         </form>

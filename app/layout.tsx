@@ -18,6 +18,9 @@ export const metadata: Metadata = {
 
 
 
+import QueryProvider from "@/providers/QueryProvider";
+import { Toaster } from 'sonner';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,8 +32,12 @@ export default function RootLayout({
       className={`${inter.variable}  h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <PizzaCursor />
-        {children}</body>
+        <Toaster position="top-right" richColors />
+        <QueryProvider>
+          <PizzaCursor />
+          {children}
+        </QueryProvider>
+      </body>
     </html>
   );
 }

@@ -2,76 +2,65 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import { useLogin } from '@/hooks/useAuth';
+
+const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const { mutate: login, isPending } = useLogin();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
+
+    const onSubmit = (data: LoginFormValues) => {
+        login(data);
+    };
 
     return (
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
-            {/* Scattered Decorative Dots - Following Image Pattern */}
-
-                 {/* Decorative dots with pulse animation */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-   
- 
-      </div>
-            {/* Large Orange Dot Left */}
-            <div className="absolute top-[20%] left-[5%] w-3 h-3 bg-[#FF9D41] rounded-full opacity-50 shadow-[0_0_10px_#FF9D4133]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.3s',
-            }} />
-            {/* Small Yellow Dot Far Left */}
-            <div className="absolute top-[35%] left-[2%] w-1.5 h-1.5 bg-[#FFD45E] rounded-full opacity-30"    style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.4s',
-            }}/>
-            {/* Medium Orange Dot Center Left */}
-            <div className="absolute top-[30%] left-[25%] w-4 h-4 bg-[#FF7A30] rounded-full opacity-60 shadow-[0_0_15px_#FF7A3044]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.5s',
-            }} />
-
-            {/* Dots Bottom Left */}
-            <div className="absolute bottom-[20%] left-[15%] w-2 h-2 bg-[#FFD45E] rounded-full opacity-40"    style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.6s',
-            }}/>
-            <div className="absolute bottom-[40%] left-[12%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-30"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.7s',
-            }} />
-
-            {/* Dots Far Right */}
-            <div className="absolute top-[18%] right-[8%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40 shadow-[0_0_12px_#FFD45E33]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.8s',
-            }}/>
-            <div className="absolute top-[32%] right-[15%] w-2.5 h-2.5 bg-[#FF9D41] rounded-full opacity-50"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.9s',
-            }} />
-            <div className="absolute bottom-[25%] right-[2%] w-4 h-4 bg-[#FFB200] rounded-full opacity-60 shadow-[0_0_20px_#FFB20033]"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.10s',
-            }}/>
-            <div className="absolute bottom-[10%] right-[30%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40"   style={{
-              animation: 'glowPulse2 2.4s ease-in-out infinite 0.11s',
-            }}/>
-
-            {/* Grid Pattern Dots */}
-            <div className="absolute top-[-2%] left-[-2%] opacity-[0.03] rotate-12 pointer-events-none">
-                <div className="grid grid-cols-6 gap-6">
-                    {[...Array(36)].map((_, i) => (
-                        <div key={`grid-top-${i}`} className="w-2 h-2 bg-black rounded-full" />
-                    ))}
-                </div>
+            {/* Scattered Decorative Dots */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                {/* Decorative dots with glow effects */}
+                <div className="absolute top-[20%] left-[5%] w-3 h-3 bg-[#FF9D41] rounded-full opacity-50 shadow-[0_0_10px_#FF9D4133] animate-pulse" />
+                <div className="absolute top-[35%] left-[2%] w-1.5 h-1.5 bg-[#FFD45E] rounded-full opacity-30 animate-pulse" />
+                <div className="absolute top-[30%] left-[25%] w-4 h-4 bg-[#FF7A30] rounded-full opacity-60 shadow-[0_0_15px_#FF7A3044] animate-pulse" />
+                <div className="absolute bottom-[20%] left-[15%] w-2 h-2 bg-[#FFD45E] rounded-full opacity-40 animate-pulse" />
+                <div className="absolute top-[18%] right-[8%] w-3 h-3 bg-[#FFD45E] rounded-full opacity-40 animate-pulse" />
+                <div className="absolute bottom-[25%] right-[2%] w-4 h-4 bg-[#FFB200] rounded-full opacity-60 animate-pulse" />
             </div>
 
             {/* Main Content */}
-            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-165 relative z-10">
-                <div className="bg-white rounded-4xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
+            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-[480px] relative z-10">
+                <div className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
 
                     {/* Header */}
-                    <div className="text-center mb-10">
-                        <h1 className="text-[32px] md:text-[38px] font-black text-primary mb-8 tracking-tight">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-6 tracking-tight">
                             Welcome to Win a Pizza!
                         </h1>
 
                         {/* Tabs Toggle */}
-                        <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between w-full mx-auto mb-10">
+                        <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between w-full mx-auto mb-8">
                             <Link href="/register" className="flex-1 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition-all text-center">
                                 Register
                             </Link>
@@ -82,66 +71,73 @@ const LoginPage = () => {
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-3">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-800 mb-2.5 ml-1">
+                            <label className="block text-sm font-bold text-gray-800 mb-2 ml-1">
                                 Email
                             </label>
                             <input
+                                {...register('email')}
                                 type="email"
                                 placeholder="john@example.com"
-                                className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                className={`w-full px-5 py-3 bg-[#F8F9FA] border ${errors.email ? 'border-red-500' : 'border-orange-100'} rounded-xl focus:outline-none focus:border-orange-400 transition-all text-gray-700 placeholder:text-gray-400`}
                             />
+                            {errors.email && (
+                                <p className="text-xs text-red-500 mt-1 ml-1">{errors.email.message}</p>
+                            )}
                         </div>
 
                         {/* Password */}
                         <div>
-                            <div className="flex justify-between items-center mb-2.5 ml-1">
+                            <div className="flex justify-between items-center mb-2 ml-1">
                                 <label className="text-sm font-bold text-gray-800">
                                     Password
                                 </label>
-                                <Link href="/forgot-password" className="text-xs font-bold text-primary hover:text-primary2 transition-colors">
+                                <Link href="/forgot-password" id="forgot-password" className="text-xs font-bold text-orange-500 hover:text-orange-600 transition-colors">
                                     Forgot Password?
                                 </Link>
                             </div>
                             <div className="relative">
                                 <input
+                                    {...register('password')}
                                     type={showPassword ? "text" : "password"}
                                     placeholder="********"
-                                    className="w-full px-6 py-2 bg-[#F8F9FA] border border-primary rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 placeholder:text-gray-400"
+                                    className={`w-full px-5 py-3 bg-[#F8F9FA] border ${errors.password ? 'border-red-500' : 'border-orange-100'} rounded-xl focus:outline-none focus:border-orange-400 transition-all text-gray-700 placeholder:text-gray-400`}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    {showPassword ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88l-3.29-3.29m7.53 7.53l3.29 3.29M3 3l18 18M10.37 5.06l.23-.01a10 10 0 0 1 9.54 5.64 10 10 0 0 1-5.95 8.9m-5.15-.14a10 10 0 0 1-6.18-8.81 10 10 0 0 1 2.37-5.59M14.12 14.12a3 3 0 1 1-4.24-4.24" /></svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                                    )}
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>
                             </div>
+                            {errors.password && (
+                                <p className="text-xs text-red-500 mt-1 ml-1">{errors.password.message}</p>
+                            )}
                         </div>
 
                         {/* Submit Button */}
-                        <div className="pt-2">
-                            <Link  href={"/"}
-                                className="w-full block text-center py-2 bg-primary text-white font-medium text-lg rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0"
-                            >
-                                Log In
-                            </Link>
-                            {/* <button
+                        <div className="pt-4">
+                            <button
                                 type="submit"
-                                className="w-full py-2 bg-primary text-white font-black text-lg rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-primary2 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0"
+                                disabled={isPending}
+                                className="w-full flex items-center justify-center py-3.5 bg-orange-500 text-white font-bold text-lg rounded-xl shadow-[0_10px_25px_-5px_#EA730766] hover:bg-orange-600 hover:shadow-[0_15px_30px_-5px_#EA730788] transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
-                                Log In
-                            </button> */}
+                                {isPending ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                        Logging in...
+                                    </>
+                                ) : (
+                                    'Log In'
+                                )}
+                            </button>
                         </div>
 
                         {/* Separator */}
-                        <div className="relative py-3">
+                        <div className="relative py-4">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-100"></div>
                             </div>
@@ -153,9 +149,9 @@ const LoginPage = () => {
                         {/* Google Login */}
                         <button
                             type="button"
-                            className="w-full py-4 bg-white border border-gray-200 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all duration-300 shadow-sm"
+                            className="w-full py-3.5 bg-white border border-gray-200 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all duration-300 shadow-sm"
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />

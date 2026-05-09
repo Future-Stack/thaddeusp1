@@ -1,129 +1,125 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Modal from "@/components/Modal";
+import { useRegions } from "@/hooks/useRegions";
+import { Region } from "@/services/region.service";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useUpdateEvent } from "@/hooks/useEvents";
+import { CreateEventDto, Event } from "@/services/event.service";
+import { Loader2 } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-interface LotteryEvent {
-  id: string;
-  title: string;
-  status: 'Active' | 'Upcoming' | 'Completed';
-  location: string;
-  drawDate: string;
-  ticketsSold: number;
-  totalTickets: number;
-  revenue: number;
-  prizeValue: number;
-  salesOpen: string;
-  salesClose: string;
+interface EventFormValues {
+  name: string;
+  description: string;
+  regionId: string;
+  drawDate: Date;
+  ticketOpen: Date;
+  ticketClose: Date;
   ticketPrice: number;
-  winner?: string;
+  prizeValue: number;
+  maxTickets: number;
+  isAutoDraw: boolean;
 }
+
+const eventSchema = z.object({
+  name: z.string().min(3, "Event name must be at least 3 characters"),
+  description: z.string().min(5, "Description must be at least 5 characters"),
+  regionId: z.string().min(1, "Please select a region"),
+  drawDate: z.date({ message: "Draw date is required" }),
+  ticketOpen: z.date({ message: "Ticket open date is required" }),
+  ticketClose: z.date({ message: "Ticket close date is required" }),
+  ticketPrice: z.number().min(0, "Ticket price cannot be negative"),
+  prizeValue: z.number().min(0, "Prize value cannot be negative"),
+  maxTickets: z.number().min(1, "Max tickets must be at least 1"),
+  isAutoDraw: z.boolean(),
+});
 
 interface EditEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  event: LotteryEvent | null;
-  onSave?: (updated: LotteryEvent) => void;
+  onSave?: () => void;
+  event: Event | null;
 }
 
-// Converts "22/04/2026, 00:00:00" -> "2026-04-22" for <input type="date">
-const toDateInput = (str: string) => {
-  try {
-    const [datePart] = str.split(",");
-    const [day, month, year] = datePart.trim().split("/");
-    return `${year}-${month}-${day}`;
-  } catch {
-    return "";
-  }
-};
+const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave, event }) => {
+  const { data: regionsData, isLoading: regionsLoading } = useRegions();
+  const regions = regionsData || [];
 
-// Converts "May 1, 2026" -> "2026-05-01"
-const drawDateToInput = (str: string) => {
-  try {
-    const d = new Date(str);
-    if (isNaN(d.getTime())) return "";
-    return d.toISOString().split("T")[0];
-  } catch {
-    return "";
-  }
-};
+  const { mutate: updateEvent, isPending } = useUpdateEvent();
 
-const EditEventModal: React.FC<EditEventModalProps> = ({
-  isOpen,
-  onClose,
-  event,
-  onSave,
-}) => {
-  const [form, setForm] = useState({
-    title: "",
-    location: "",
-    status: "Active" as LotteryEvent["status"],
-    drawDate: "",
-    salesOpen: "",
-    salesClose: "",
-    ticketPrice: "",
-    prizeValue: "",
-    totalTickets: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<EventFormValues>({
+    resolver: zodResolver(eventSchema),
   });
 
   // Sync form when event changes
   useEffect(() => {
-    if (event) {
-      setForm({
-        title: event.title,
-        location: event.location,
-        status: event.status,
-        drawDate: drawDateToInput(event.drawDate),
-        salesOpen: toDateInput(event.salesOpen),
-        salesClose: toDateInput(event.salesClose),
-        ticketPrice: String(event.ticketPrice),
-        prizeValue: String(event.prizeValue),
-        totalTickets: String(event.totalTickets),
+    if (event && isOpen) {
+      reset({
+        name: event.name,
+        description: event.description,
+        regionId: event.regionId,
+        drawDate: new Date(event.drawDate),
+        ticketOpen: new Date(event.ticketOpen),
+        ticketClose: new Date(event.ticketClose),
+        ticketPrice: event.ticketPrice,
+        prizeValue: event.prizeValue,
+        maxTickets: event.maxTickets,
+        isAutoDraw: event.isAutoDraw,
       });
     }
-  }, [event]);
+  }, [event, isOpen, reset]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: EventFormValues) => {
     if (!event) return;
-    onSave?.({
-      ...event,
-      title: form.title,
-      location: form.location,
-      status: form.status,
-      drawDate: form.drawDate,
-      salesOpen: form.salesOpen,
-      salesClose: form.salesClose,
-      ticketPrice: parseFloat(form.ticketPrice) || 0,
-      prizeValue: parseFloat(form.prizeValue) || 0,
-      totalTickets: parseInt(form.totalTickets) || 0,
+
+    // Convert dates to ISO format
+    const payload: Partial<CreateEventDto> = {
+      ...data,
+      drawDate: new Date(data.drawDate).toISOString(),
+      ticketOpen: new Date(data.ticketOpen).toISOString(),
+      ticketClose: new Date(data.ticketClose).toISOString(),
+    };
+
+    updateEvent({ id: event.id, data: payload }, {
+      onSuccess: () => {
+        if (onSave) {
+          onSave();
+        } else {
+          onClose();
+        }
+      },
     });
-    onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-h-[85vh] overflow-y-auto scrollbar-hide">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-h-[80vh] overflow-y-auto scrollbar-hide">
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-[#2563EB]/10 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#111827]/10 flex items-center justify-center">
               <EditIcon />
             </div>
             <h2 className="text-2xl font-bold text-[#111827]">Edit Event</h2>
           </div>
-          <p className="text-gray-500 text-sm pl-12">
-            Update the details for <span className="font-semibold text-[#111827]">{event?.title}</span>
+          <p className="text-gray-500 text-sm">
+            Update the details for <span className="font-semibold text-[#111827]">{event?.name}</span>
           </p>
         </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Form */}
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           {/* Event Name */}
           <div>
             <label className="block text-sm font-bold text-[#111827] mb-2">
@@ -131,57 +127,37 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
             </label>
             <input
               type="text"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              placeholder="e.g., Spring Pizza Week"
-              required
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm placeholder:text-gray-400"
+              {...register("name")}
+              placeholder="e.g., Summer Lucky Draw"
+              className={`w-full px-4 py-3 rounded-xl border ${errors.name ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm placeholder:text-gray-400`}
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
 
-          {/* Region / Status row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-[#111827] mb-2">
-                Region / City <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm appearance-none bg-white"
-                >
-                  <option value="New York">New York</option>
-                  <option value="London">London</option>
-                  <option value="Manchester">Manchester</option>
-                  <option value="Birmingham">Birmingham</option>
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <ChevronDownIcon />
-                </div>
+          {/* Region / City */}
+          <div>
+            <label className="block text-sm font-bold text-[#111827] mb-2">
+              Region / City <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <select
+                {...register("regionId")}
+                className={`w-full px-4 py-3 rounded-xl border ${errors.regionId ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
+              >
+                <option value="" disabled>
+                  {regionsLoading ? "Loading regions..." : "Select a region"}
+                </option>
+                {regions.map((region: Region) => (
+                  <option key={region.id} value={region.id}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronDownIcon />
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-bold text-[#111827] mb-2">Status</label>
-              <div className="relative">
-                <select
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm appearance-none bg-white"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Upcoming">Upcoming</option>
-                  <option value="Completed">Completed</option>
-                </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <ChevronDownIcon />
-                </div>
-              </div>
-            </div>
+            {errors.regionId && <p className="text-red-500 text-xs mt-1">{errors.regionId.message}</p>}
           </div>
 
           {/* Draw Date */}
@@ -190,108 +166,156 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
               Draw Date <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <input
-                type="date"
+              <Controller
+                control={control}
                 name="drawDate"
-                value={form.drawDate}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
+                render={({ field }) => (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={(date: Date | null) => field.onChange(date)}
+                    showTimeSelect
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    placeholderText="Select draw date and time"
+                    className={`w-full px-4 py-3 rounded-xl border ${errors.drawDate ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
+                    wrapperClassName="w-full"
+                    popperPlacement="bottom-end"
+                    portalId="edit-datepicker-portal"
+                  />
+                )}
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
                 <CalendarIcon />
               </div>
             </div>
-            <p className="mt-1.5 text-[11px] text-gray-400">The date when the winner will be selected</p>
+            {errors.drawDate && <p className="text-red-500 text-xs mt-1">{errors.drawDate.message}</p>}
           </div>
 
-          {/* Sales Window */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Ticket Sales Window */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-[#111827] mb-2">
-                Sales Open <span className="text-red-500">*</span>
+                Ticket Sales Open <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <input
-                  type="date"
-                  name="salesOpen"
-                  value={form.salesOpen}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
+                <Controller
+                  control={control}
+                  name="ticketOpen"
+                  render={({ field }) => (
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date | null) => field.onChange(date)}
+                      showTimeSelect
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                      placeholderText="Select opening time"
+                      className={`w-full px-4 py-3 rounded-xl border ${errors.ticketOpen ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
+                      wrapperClassName="w-full"
+                      popperPlacement="bottom-end"
+                      portalId="edit-datepicker-portal"
+                    />
+                  )}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
                   <CalendarIcon />
                 </div>
               </div>
+              {errors.ticketOpen && <p className="text-red-500 text-xs mt-1">{errors.ticketOpen.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-bold text-[#111827] mb-2">
-                Sales Close <span className="text-red-500">*</span>
+                Ticket Sales Close <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <input
-                  type="date"
-                  name="salesClose"
-                  value={form.salesClose}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
+                <Controller
+                  control={control}
+                  name="ticketClose"
+                  render={({ field }) => (
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date: Date | null) => field.onChange(date)}
+                      showTimeSelect
+                      dateFormat="MMMM d, yyyy h:mm aa"
+                      placeholderText="Select closing time"
+                      className={`w-full px-4 py-3 rounded-xl border ${errors.ticketClose ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm w-full`}
+                      wrapperClassName="w-full"
+                      popperPlacement="bottom-end"
+                      portalId="edit-datepicker-portal"
+                    />
+                  )}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
                   <CalendarIcon />
                 </div>
               </div>
+              {errors.ticketClose && <p className="text-red-500 text-xs mt-1">{errors.ticketClose.message}</p>}
             </div>
           </div>
 
-          {/* Pricing */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Pricing and Value */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-[#111827] mb-2">Ticket Price ($)</label>
               <input
                 type="number"
-                name="ticketPrice"
-                value={form.ticketPrice}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
+                {...register("ticketPrice", { valueAsNumber: true })}
+                className={`w-full px-4 py-3 rounded-xl border ${errors.ticketPrice ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
+              {errors.ticketPrice && <p className="text-red-500 text-xs mt-1">{errors.ticketPrice.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-bold text-[#111827] mb-2">Prize Value ($)</label>
               <input
                 type="number"
-                name="prizeValue"
-                value={form.prizeValue}
-                onChange={handleChange}
-                min="0"
-                step="0.01"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
+                {...register("prizeValue", { valueAsNumber: true })}
+                className={`w-full px-4 py-3 rounded-xl border ${errors.prizeValue ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-[#111827] mb-2">Max Tickets</label>
-              <input
-                type="number"
-                name="totalTickets"
-                value={form.totalTickets}
-                onChange={handleChange}
-                min="0"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] transition-all text-sm"
-              />
+              {errors.prizeValue && <p className="text-red-500 text-xs mt-1">{errors.prizeValue.message}</p>}
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="flex gap-3 pt-2">
+          {/* Maximum Tickets */}
+          <div>
+            <label className="block text-sm font-bold text-[#111827] mb-2">Maximum Tickets</label>
+            <input
+              type="number"
+              {...register("maxTickets", { valueAsNumber: true })}
+              className={`w-full px-4 py-3 rounded-xl border ${errors.maxTickets ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm`}
+            />
+            {errors.maxTickets && <p className="text-red-500 text-xs mt-1">{errors.maxTickets.message}</p>}
+          </div>
+
+          {/* Auto Draw Toggle */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="editIsAutoDraw"
+              {...register("isAutoDraw")}
+              className="w-4 h-4 rounded border-gray-300 text-[#111827] focus:ring-[#111827]"
+            />
+            <label htmlFor="editIsAutoDraw" className="text-sm font-bold text-[#111827] cursor-pointer">
+              Enable Automatic Draw
+            </label>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-bold text-[#111827] mb-2">Event Description</label>
+            <textarea
+              {...register("description")}
+              rows={4}
+              className={`w-full px-4 py-3 rounded-xl border ${errors.description ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm resize-none`}
+            />
+            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              className="flex-1 bg-[#2563EB] text-white py-4 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center justify-center gap-2"
+              disabled={isPending}
+              className="flex-1 bg-[#111827] text-white py-4 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <SaveIcon />
-              Save Changes
+              {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isPending ? "Updating..." : "Update Event"}
             </button>
             <button
               type="button"
@@ -307,19 +331,10 @@ const EditEventModal: React.FC<EditEventModalProps> = ({
   );
 };
 
-// Icons
 const EditIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-  </svg>
-);
-
-const SaveIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-    <polyline points="17 21 17 13 7 13 7 21" />
-    <polyline points="7 3 7 8 15 8" />
   </svg>
 );
 
@@ -337,5 +352,50 @@ const CalendarIcon = () => (
     <line x1="3" y1="10" x2="21" y2="10" />
   </svg>
 );
+
+// Custom styles for DatePicker
+const datePickerStyles = `
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  .react-datepicker__input-container input {
+    width: 100%;
+  }
+  .react-datepicker-popper {
+    z-index: 9999 !important;
+  }
+  .react-datepicker {
+    font-family: inherit;
+    border-radius: 16px;
+    border: 1px solid #F3F4F6;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  .react-datepicker__header {
+    background-color: white;
+    border-bottom: 1px solid #F3F4F6;
+  }
+  .react-datepicker__day--selected {
+    background-color: #111827 !important;
+    border-radius: 8px;
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const portalDiv = document.getElementById('edit-datepicker-portal');
+  if (!portalDiv) {
+    const div = document.createElement('div');
+    div.id = 'edit-datepicker-portal';
+    document.body.appendChild(div);
+  }
+
+  const styleId = 'edit-datepicker-styles';
+  let style = document.getElementById(styleId) as HTMLStyleElement;
+  if (!style) {
+    style = document.createElement('style');
+    style.id = styleId;
+    document.head.appendChild(style);
+  }
+  style.innerHTML = datePickerStyles;
+}
 
 export default EditEventModal;

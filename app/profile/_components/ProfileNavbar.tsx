@@ -4,7 +4,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useGetMe, useLogout } from '@/hooks/useAuth'
+import { User, LogOut, Bell, Settings, Menu, X, ChevronRight } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -40,43 +42,27 @@ const INITIAL_NOTIFICATIONS: Notification[] = [
     time: '3 hrs ago',
     read: false,
   },
-  {
-    id: 4,
-    type: 'system',
-    title: '🔒 Password Changed',
-    description: 'Your account password was updated successfully.',
-    time: 'Yesterday',
-    read: true,
-  },
-  {
-    id: 5,
-    type: 'win',
-    title: '🏆 Prize Dispatched',
-    description: 'Your prize from Draw #204 has been shipped.',
-    time: '2 days ago',
-    read: true,
-  },
 ]
 
 const notifIconMap: Record<Notification['type'], React.ReactNode> = {
   win: (
-    <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+    <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
     </div>
   ),
   voucher: (
-    <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF5722" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M17 6V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1"/><line x1="12" y1="12" x2="12" y2="12.01"/></svg>
+    <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF5722" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M17 6V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1" /><line x1="12" y1="12" x2="12" y2="12.01" /></svg>
     </div>
   ),
   system: (
-    <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+    <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /></svg>
     </div>
   ),
   promo: (
-    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v6l4 2"/></svg>
+    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v6l4 2" /></svg>
     </div>
   ),
 }
@@ -89,6 +75,10 @@ const ProfileNavbar = () => {
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
   const notifRef = useRef<HTMLDivElement>(null);
 
+  const { data: profileData } = useGetMe();
+  const { logout } = useLogout();
+  const user = profileData?.user;
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const handleMarkAllRead = () => {
@@ -99,7 +89,6 @@ const ProfileNavbar = () => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
   }
 
-  // Close notification dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -112,17 +101,16 @@ const ProfileNavbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isNotificationOpen])
 
-
-
   const navLinks = [
     { name: 'Dashboard', href: '/profile/dashboard' },
     { name: 'My Vouchers', href: '/profile/my-vouchers' },
     { name: 'Winners', href: '/profile/winners' },
   ]
+
   const isSettingsActive = pathname.startsWith('/profile/settings')
   return (
     <nav className="bg-[#FDF8F1] py-4">
-      <div className="  mx-auto px-4 md:px-25 flex items-center justify-between">
+      <div className="mx-auto px-4 md:px-25 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="relative w-40 h-12">
           <Image
@@ -193,7 +181,7 @@ const ProfileNavbar = () => {
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-end gap-4">
             {/* Notification Button + Dropdown */}
             <div className="relative" ref={notifRef}>
               <button
@@ -259,9 +247,8 @@ const ProfileNavbar = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05, duration: 0.2 }}
                           onClick={() => handleNotifClick(notif.id)}
-                          className={`w-full text-left flex items-start gap-3 px-4 py-3 transition-colors duration-150 ${
-                            notif.read ? 'bg-white hover:bg-gray-50' : 'bg-orange-50/60 hover:bg-orange-50'
-                          }`}
+                          className={`w-full text-left flex items-start gap-3 px-4 py-3 transition-colors duration-150 ${notif.read ? 'bg-white hover:bg-gray-50' : 'bg-orange-50/60 hover:bg-orange-50'
+                            }`}
                         >
                           {notifIconMap[notif.type]}
                           <div className="flex-1 min-w-0">
@@ -272,7 +259,7 @@ const ProfileNavbar = () => {
                             <p className="text-[11px] text-gray-300 mt-1">{notif.time}</p>
                           </div>
                           {!notif.read && (
-                            <span className="w-2 h-2 rounded-full bg-[#FF5722] flex-shrink-0 mt-1.5" />
+                            <span className="w-2 h-2 rounded-full bg-[#FF5722] shrink-0 mt-1.5" />
                           )}
                         </motion.button>
                       ))}
