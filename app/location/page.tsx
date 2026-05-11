@@ -7,6 +7,7 @@ import Image from 'next/image';
 const SelectLocation = () => {
     const [zipCode, setZipCode] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
+    console.log("Hello world.")
 
     return (
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
