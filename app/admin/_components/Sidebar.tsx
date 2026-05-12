@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimationWrapper from '@/components/AnimationWrapper';
+import { useLogout } from '@/hooks/useAuth';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -18,12 +19,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     const menuItems = [
         { name: 'Dashboard', icon: <DashboardIcon />, href: '/admin/dashboard' },
         { name: 'Lottery Event', icon: <LotteryIcon />, href: '/admin/lottery-event' },
-        { name: 'Select Winners', icon: <WinnersIcon />, href: '/admin/select-winners' },
         { name: 'Users', icon: <UsersIcon />, href: '/admin/users' },
         { name: 'Revenue', icon: <RevenueIcon />, href: '/admin/revenue' },
-        { name: 'Vendors', icon: <VendorsIcon />, href: '/admin/vendors' },
         { name: 'Settings', icon: <SettingsIcon />, href: '/admin/settings' },
     ];
+
+    const { logout } = useLogout();
 
     const SidebarContent = (
         <div className="w-64 bg-[#F8FBFF] h-full flex flex-col border-r border-gray-100">
@@ -78,9 +79,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                 })}
             </nav>
 
-            {/* Logout */}
             <div className="p-4 mt-auto">
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                <button
+                    onClick={logout}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
                     <LogoutIcon />
                     <span className="text-sm font-medium">Logout</span>
                 </button>

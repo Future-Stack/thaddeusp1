@@ -282,7 +282,7 @@ const ProfileNavbar = () => {
             <div className="relative">
               <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-200" onClick={() => { setIsDropdownOpen(!isDropdownOpen); setIsNotificationOpen(false); }}>
                 <Image
-                  src="/images/profile.jpg"
+                  src={user?.profileImg || "/images/profile.jpg"}
                   alt="User"
                   fill
                   className="object-cover"
@@ -305,8 +305,8 @@ const ProfileNavbar = () => {
                       className="absolute right-0 mt-3 w-56 bg-white rounded-2xl border border-gray-50 py-2 z-60 overflow-hidden shadow-2xl border-t border-t-gray-400"
                     >
                       <div className="px-4 py-3 border-b border-gray-50 mb-1">
-                        <p className="text-[14px] font-semibold text-[#1C274C]">My Account</p>
-                        <p className="text-[11px] text-[#8E94A4]">savannah@example.com</p>
+                        <p className="text-[14px] font-semibold text-[#1C274C]">{user?.fullName || 'My Account'}</p>
+                        <p className="text-[11px] text-[#8E94A4]">{user?.email || 'Guest'}</p>
                       </div>
 
                       <Link href="/profile" className="w-full text-left px-4 py-2 text-[14px] text-[#424B5E] hover:bg-gray-50 transition-colors flex items-center gap-2">
@@ -316,7 +316,10 @@ const ProfileNavbar = () => {
 
 
                       <div className="border-t border-gray-50 mt-1 pt-1">
-                        <button className="w-full text-left px-4 py-2 text-[14px] text-red-500 hover:bg-red-50 transition-colors font-medium">
+                        <button 
+                          onClick={logout}
+                          className="w-full text-left px-4 py-2 text-[14px] text-red-500 hover:bg-red-50 transition-colors font-medium"
+                        >
                           Logout
                         </button>
                       </div>
@@ -401,18 +404,21 @@ const ProfileNavbar = () => {
                 <div className="flex items-center gap-3 mb-6">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#FF5722]/20">
                     <Image
-                      src="/images/profile.jpg"
+                      src={user?.profileImg || "/images/profile.jpg"}
                       alt="User"
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#1C274C]">Savannah Nguyen</p>
-                    <p className="text-[11px] text-[#8E94A4]">savannah@example.com</p>
+                    <p className="text-sm font-bold text-[#1C274C]">{user?.fullName || 'Guest'}</p>
+                    <p className="text-[11px] text-[#8E94A4]">{user?.email || 'No email'}</p>
                   </div>
                 </div>
-                <button className="w-full py-3 rounded-xl bg-red-50 text-red-500 font-bold text-sm hover:bg-red-100 transition-colors">
+                <button 
+                  onClick={logout}
+                  className="w-full py-3 rounded-xl bg-red-50 text-red-500 font-bold text-sm hover:bg-red-100 transition-colors"
+                >
                   Logout
                 </button>
               </div>
