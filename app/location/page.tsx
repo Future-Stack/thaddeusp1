@@ -9,6 +9,12 @@ const SelectLocation = () => {
     const [selectedCity, setSelectedCity] = useState('');
     console.log("Hello world.")
 
+    const handleContinue = () => {
+        console.log("Selected ZIP Code:", zipCode);
+        console.log("Selected City:", selectedCity);
+        // Here you can add logic to save the user's selection or navigate to the next step
+    }
+
     return (
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
             <div className="absolute top-[20%] left-[10%] w-3 h-3 bg-[#FF9D41] rounded-full opacity-40 animate-pulse duration-300" />

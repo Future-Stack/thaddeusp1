@@ -11,7 +11,7 @@ import { useLogin } from '@/hooks/useAuth';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z.string().min(6, 'Password must be at least 8 characters'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -50,7 +50,7 @@ const LoginPage = () => {
             </div>
 
             {/* Main Content */}
-            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-[480px] relative z-10">
+            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-120 relative z-10">
                 <div className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
 
                     {/* Header */}

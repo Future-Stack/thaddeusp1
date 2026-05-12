@@ -10,48 +10,50 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-const winners = [
-    {
-        id: 1,
-        name: 'Megan Clayton',
-        location: 'Boston, Winner',
-        date: 'April 6, 2026',
-        image: '/winner/winner.png', // Fallback or reusing existing
-        quote: "Honestly, I entered the Win a Pizza raffle on a whim, but it turned into something I really look forward to every week. I'm based in Boston, and I love that it's not just about winning a free large pizza (which is awesome on its own), but also about giving back. Knowing that part of the effort helps support local homeless shelters makes it feel ."
-    },
-    {
-        id: 2,
-        name: 'Alex Johnson',
-        location: 'Chicago, Winner',
-        date: 'April 12, 2026',
-        image: '/winner/winner.png',
-        quote: "I've been playing for a few weeks now, and it's such a fun way to contribute to a good cause. Winning was just the icing on the cake! The process is seamless, and the community impact is real. Highly recommend everyone to give it a shot at least once."
-    },
-    {
-        id: 3,
-        name: 'Sarah Williams',
-        location: 'Austin, Winner',
-        date: 'April 15, 2026',
-        image: '/winner/winner.png',
-        quote: "What I love most about this platform is the transparency. You know exactly where your dollar goes. And the pizza? Absolutely delicious! It's rare to find such a win-win situation where you can help people and also get a chance to win something great."
-    }
-];
+import { useGetReviews } from '@/hooks/useReviews';
+import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+
+
+const WinnerSkeleton = () => (
+    <div className="bg-[#FFFEFB] py-25 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
+        <div className="w-full md:w-1/4 text-center md:text-left">
+            <Skeleton className="h-8 w-3/4 mb-2 mx-auto md:mx-0" />
+            <Skeleton className="h-4 w-1/3 mx-auto md:mx-0" />
+        </div>
+        <div className="relative shrink-0">
+            <div className="w-37.5 h-37.5 rounded-full border-2 border-dashed border-gray-200 p-3">
+                <Skeleton className="w-full h-full rounded-full" />
+            </div>
+        </div>
+        <div className="flex-1 relative">
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-2/3" />
+        </div>
+    </div>
+);
 
 const RecentWinners = () => {
+    const { data, isLoading, isError } = useGetReviews(1, 10);
+    const reviews = data?.data?.data || [];
+
     return (
         <section className="py-24 bg-[#FFFAF6] relative overflow-hidden">
             {/* Background Decorative Patterns */}
             {/* Top Right Dots */}
             <div className="absolute -top-10 -right-10   pointer-events-none hidden lg:block">
-                 <Image src="/winner/right.png" alt="ok" width={150} height={310} className='w-full h-auto'/>
+                <Image src="/winner/right.png" alt="ok" width={150} height={310} className='w-full h-auto' />
             </div>
 
             {/* Bottom Left Ripple */}
             <div className="absolute bottom-0 left-0 w-87.5 h-87.5  pointer-events-none hidden lg:block">
-                
+
                 <div className="absolute    ">
-                            <Image src="/winner/left.png" alt="ok" width={350} height={350} className='w-full h-auto'/>
-                    </div>
+                    <Image src="/winner/left.png" alt="ok" width={350} height={350} className='w-full h-auto' />
+                </div>
             </div>
 
             {/* Floating Dots in top left */}
@@ -75,7 +77,7 @@ const RecentWinners = () => {
                     {/* Ornament (Consistent with other sections) */}
                     <AnimationWrapper animationType="scaleUp" delay={0.1} className="flex justify-center gap-4">
                         <div>
-                             <Image src="/winner/headicon.png" alt="headicon" width={274} height={20} className='w-full h-full'/>
+                            <Image src="/winner/headicon.png" alt="headicon" width={274} height={20} className='w-full h-full' />
                         </div>
                     </AnimationWrapper>
                 </div>
@@ -83,61 +85,74 @@ const RecentWinners = () => {
                 {/* Slider Container */}
                 <div className="max-w-6xl mx-auto overflow-hidden ">
                     <AnimationWrapper animationType="fadeUp" delay={0.2}>
-                        <Swiper
-                            modules={[Pagination, Autoplay]}
-                            spaceBetween={30}
-                            slidesPerView={1}
-                            pagination={{ clickable: true }}
-                            autoplay={{ delay: 5000, disableOnInteraction: false }}
-                            className="winners-swiper pb-16"
-                        >
-                            {winners.map((winner) => (
-                                <SwiperSlide key={winner.id}>
-                                    <div className="bg-[#FFFEFB] py-25 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
-                                        {/* Left Side: Winner Info */}
-                                        <div className="w-full md:w-1/4 text-center md:text-left">
-                                            <h3 className="text-2xl lg:text-3xl font-black text-[#0D3B54CC] mb-2">
-                                                {winner.name}
-                                            </h3>
-                                            <p className="text-[#718096] text-lg font-semibold mb-1">
-                                                {winner.location}
-                                            </p>
-                                            <p className="text-gray-400 text-sm">
-                                                ( {winner.date} )
-                                            </p>
-                                        </div>
+                        {isLoading ? (
+                            <WinnerSkeleton />
+                        ) : isError ? (
+                            <div className="text-center py-20 text-red-500 font-semibold bg-white rounded-3xl shadow-sm">
+                                Failed to load recent winners. Please try again later.
+                            </div>
+                        ) : reviews.length === 0 ? (
+                            <div className="text-center py-20 text-gray-500 font-semibold bg-white rounded-3xl shadow-sm">
+                                No winners yet. Be the first one!
+                            </div>
+                        ) : (
+                            <Swiper
+                                modules={[Pagination, Autoplay]}
+                                spaceBetween={30}
+                                slidesPerView={1}
+                                pagination={{ clickable: true }}
+                                autoplay={{ delay: 5000, disableOnInteraction: false }}
+                                className="winners-swiper pb-16"
+                            >
+                                {reviews.map((winner: any) => (
+                                    <SwiperSlide key={winner.id}>
+                                        <div className="bg-[#FFFEFB] py-25 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
+                                            {/* Left Side: Winner Info */}
+                                            <div className="w-full md:w-1/4 text-center md:text-left">
+                                                <h3 className="text-2xl lg:text-3xl font-black text-[#0D3B54CC] mb-2">
+                                                    {winner.user.fullName}
+                                                </h3>
+                                                <p className="text-[#718096] text-lg font-semibold mb-1">
+                                                    Verified Winner
+                                                </p>
+                                                <p className="text-gray-400 text-sm">
+                                                    ( {format(new Date(winner.createdAt), 'MMMM d, yyyy')} )
+                                                </p>
+                                            </div>
 
-                                        {/* Center: Image with Dashed Border */}
-                                        <div className="relative shrink-0">
-                                            <div className="w-37.5 h-37.5  rounded-full border-2 border-dashed border-[#FF8A65] p-3 animate-pulse-slow">
-                                                <div className="w-full h-full rounded-full overflow-hidden relative">
-                                                    <Image
-                                                        src={winner.image}
-                                                        alt={winner.name}
-                                                        fill
-                                                        className="object-cover"
-                                                    />
+                                            {/* Center: Image with Dashed Border */}
+                                            <div className="relative shrink-0">
+                                                <div className="w-37.5 h-37.5  rounded-full border-2 border-dashed border-[#FF8A65] p-3 animate-pulse-slow">
+                                                    <div className="w-full h-full rounded-full overflow-hidden relative">
+                                                        <Image
+                                                            src={winner.user.profileImg || '/profile.webp'}
+                                                            alt={winner.user.fullName}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                          
-                                        </div>
 
-                                        {/* Right Side: Quote */}
-                                        <div className="flex-1 relative">
-                                            <div className="absolute top-0 -left-6 mr-4 opacity-20 pointer-events-none">
-                                                 <Image src="/winner/quote.png" alt="qoute" width={40} height={40}/>
                                             </div>
-                                            <blockquote className="max-w-125 text-[#3D6276] text-lg lg:text-[16px] font-normal ml-5 italic leading-relaxed relative z-10">
-                                                "{winner.quote}"
-                                            </blockquote>
+
+                                            {/* Right Side: Quote */}
+                                            <div className="flex-1 relative">
+                                                <div className="absolute top-0 -left-6 mr-4 opacity-20 pointer-events-none">
+                                                    <Image src="/winner/quote.png" alt="qoute" width={40} height={40} />
+                                                </div>
+                                                <blockquote className="max-w-125 text-[#3D6276] text-lg lg:text-[16px] font-normal ml-5 italic leading-relaxed relative z-10">
+                                                    "{winner.text}"
+                                                </blockquote>
+                                            </div>
                                         </div>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                        </Swiper>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        )}
                     </AnimationWrapper>
                 </div>
             </div>
+
 
             <style jsx global>{`
                 .winners-swiper .swiper-pagination-bullet {

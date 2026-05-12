@@ -9,6 +9,13 @@ export const useEvents = () => {
   });
 };
 
+export const useRunningEvent = () => {
+  return useQuery({
+    queryKey: ['running-event'],
+    queryFn: eventService.getRunningEvent,
+  });
+};
+
 export const useCreateEvent = () => {
   const queryClient = useQueryClient();
 
