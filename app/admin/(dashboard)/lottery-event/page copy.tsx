@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import AnimationWrapper from "@/components/AnimationWrapper";
 import { motion } from "framer-motion";
 import CreateEventModal from "../dashboard/_components/CreateEventModal";
@@ -12,7 +10,17 @@ import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { Event } from "@/services/event.service";
 import { Trash2 } from "lucide-react";
 
-type EventStatus = "UPCOMING" | "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
+type EventStatus = "Active" | "Upcoming" | "Completed";
+
+const getEventStatus = (event: Event): EventStatus => {
+  const now = new Date();
+  const drawDate = new Date(event.drawDate);
+  const ticketOpen = new Date(event.ticketOpen);
+
+  if (now < ticketOpen) return "Upcoming";
+  if (now > drawDate) return "Completed";
+  return "Active";
+};
 
 const LotteryEventPage = () => {
   const [activeTab, setActiveTab] = useState<"All" | EventStatus>("All");
@@ -28,35 +36,25 @@ const LotteryEventPage = () => {
 
   const filteredEvents = useMemo(() => {
     if (activeTab === "All") return events;
-    return events.filter((event) => event.status === activeTab);
+    return events.filter((event) => getEventStatus(event) === activeTab);
   }, [events, activeTab]);
 
   const tabs = [
     { id: "All", label: "All Events", count: events.length },
     {
-      id: "ONGOING",
-      label: "Ongoing",
-      count: events.filter((e) => e.status === "ONGOING").length,
+      id: "Active",
+      label: "Active",
+      count: events.filter((e) => getEventStatus(e) === "Active").length,
     },
     {
-      id: "UPCOMING",
+      id: "Upcoming",
       label: "Upcoming",
-      count: events.filter((e) => e.status === "UPCOMING").length,
+      count: events.filter((e) => getEventStatus(e) === "Upcoming").length,
     },
     {
-      id: "CLOSED",
-      label: "Closed",
-      count: events.filter((e) => e.status === "CLOSED").length,
-    },
-    {
-      id: "COMPLETED",
+      id: "Completed",
       label: "Completed",
-      count: events.filter((e) => e.status === "COMPLETED").length,
-    },
-    {
-      id: "CANCELLED",
-      label: "Cancelled",
-      count: events.filter((e) => e.status === "CANCELLED").length,
+      count: events.filter((e) => getEventStatus(e) === "Completed").length,
     },
   ];
 
@@ -93,10 +91,11 @@ const LotteryEventPage = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-4 text-sm font-medium transition-all relative min-w-max ${activeTab === tab.id
-                ? "text-[#FF4D12]"
-                : "text-gray-500 hover:text-gray-700"
-                }`}
+              className={`pb-4 text-sm font-medium transition-all relative min-w-max ${
+                activeTab === tab.id
+                  ? "text-[#FF4D12]"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
             >
               {tab.label} ({tab.count})
               {activeTab === tab.id && (
@@ -236,12 +235,11 @@ const EventCard = ({
   onEdit: (event: Event) => void;
   onDelete: (event: Event) => void;
 }) => {
-  const router = useRouter();
   const handleSelectWinner = () => {
-    router.push(`/admin/select-winners/${event.id}`);
+    alert(`Selecting winner for ${event.name}...`);
   };
 
-  const status = event.status;
+  const status = getEventStatus(event);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all">
@@ -250,11 +248,7 @@ const EventCard = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <Link href={`/admin/select-winners/${event.id}`}>
-                <h3 className="text-xl font-bold text-[#111827] hover:text-[#FF4D12] transition-colors cursor-pointer">
-                  {event.name}
-                </h3>
-              </Link>
+              <h3 className="text-xl font-bold text-[#111827]">{event.name}</h3>
               <StatusBadge status={status} />
             </div>
             <div className="flex items-center gap-1.5 text-gray-500 text-sm">
@@ -270,7 +264,7 @@ const EventCard = ({
             >
               Edit
             </button>
-            {status === "UPCOMING" && (
+            {status === "Active" && (
               <button
                 onClick={handleSelectWinner}
                 className="bg-[#111827] text-white px-5 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
@@ -375,11 +369,9 @@ const StatBox = ({
 
 const StatusBadge = ({ status }: { status: EventStatus }) => {
   const styles = {
-    UPCOMING: "bg-[#DBEAFE] text-[#2563EB]",
-    ONGOING: "bg-[#DCFCE7] text-[#16A34A]",
-    CLOSED: "bg-[#FEF3C7] text-[#D97706]",
-    COMPLETED: "bg-[#F3F4F6] text-gray-600",
-    CANCELLED: "bg-[#FEE2E2] text-[#DC2626]",
+    Active: "bg-[#DCFCE7] text-[#16A34A]",
+    Upcoming: "bg-[#DBEAFE] text-[#2563EB]",
+    Completed: "bg-[#F3F4F6] text-gray-600",
   };
   return (
     <span

@@ -32,6 +32,7 @@ export interface Event {
   prizeValue: number;
   maxTickets: number;
   isAutoDraw: boolean;
+  status: "UPCOMING" | "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
   winner?: string;
   createdAt: string;
   updatedAt: string;

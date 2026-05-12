@@ -75,11 +75,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName }
     return (
         <Modal isOpen={isOpen} onClose={onClose} className={currentView === 'details' ? "max-w-[500px]" : "max-w-[450px]"}>
             <div className={`relative ${currentView === 'details' ? 'p-0' : 'p-10 text-center'}`}>
-                {/* {currentView === 'details' && (
-                    <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 z-10">
-                        <X className="w-5 h-5" />
-                    </button>
-                )} */}
+
 
                 <AnimatePresence mode="wait">
                     {currentView === 'selecting' && (

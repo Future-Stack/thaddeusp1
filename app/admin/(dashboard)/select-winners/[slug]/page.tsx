@@ -1,9 +1,9 @@
 import React from 'react';
-import WinnerSelectionHeader from './_components/WinnerSelectionHeader';
-import RegionStatsCard from './_components/RegionStatsCard';
-import TicketPoolTable from './_components/TicketPoolTable';
+import WinnerSelectionHeader from '../_components/WinnerSelectionHeader';
+import RegionStatsCard from '../_components/RegionStatsCard';
+import TicketPoolTable from '../_components/TicketPoolTable';
 
-export default function SelectWinnersPage() {
+export default function SelectWinnersPage({ params }: { params: { slug: string } }) {
     return (
         <div className="w-full">
             <WinnerSelectionHeader />
