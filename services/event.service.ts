@@ -45,6 +45,13 @@ export interface EventsResponse {
   data: Event[];
 }
 
+export interface RunningEventResponse {
+  statusCode: number;
+  path: string;
+  timestamp: string;
+  data: Event;
+}
+
 export const eventService = {
   create: async (data: CreateEventDto) => {
     const response = await apiClient.post('/events', data);
@@ -53,6 +60,11 @@ export const eventService = {
   
   getAll: async (): Promise<EventsResponse> => {
     const response = await apiClient.get('/events');
+    return response.data;
+  },
+
+  getRunningEvent: async (): Promise<RunningEventResponse> => {
+    const response = await apiClient.get('/events/running');
     return response.data;
   },
 
