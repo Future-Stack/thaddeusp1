@@ -8,6 +8,7 @@ import { useRevenueStats } from '@/hooks/useRevenue';
 import { useBuyTickets } from '@/hooks/usePurchase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 const TicketPage = () => {
     const [ticketCount, setTicketCount] = useState(1);
@@ -63,6 +64,7 @@ const TicketPage = () => {
                 <div className="bg-white rounded-4xl p-10 shadow-lg text-center border border-red-50">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops!</h2>
                     <p className="text-gray-500">No active draw found at the moment. Please check back later.</p>
+                    <Link href="/" className='mt-4 bg-black text-white rounded-xl inline-block px-8 py-2'>Back To Home</Link>
                 </div>
             </div>
         );

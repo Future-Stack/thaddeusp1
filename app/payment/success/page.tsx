@@ -8,7 +8,10 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 import Link from 'next/link';
 
 const PaymentSuccessPage = () => {
+    const [receiptId, setReceiptId] = React.useState<string>("");
+
     useEffect(() => {
+        setReceiptId(`#ORD-${Math.floor(1000 + Math.random() * 9000)}`);
         const duration = 3 * 1000;
         const animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
@@ -55,12 +58,12 @@ const PaymentSuccessPage = () => {
 
             <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-[500px] relative z-10">
                 <div className="bg-white rounded-[40px] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.1)] p-10 md:p-12 border border-orange-50/50 flex flex-col items-center text-center">
-                    
+
                     {/* Success Icon Animation */}
-                    <motion.div 
+                    <motion.div
                         initial={{ scale: 0, rotate: -10 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        transition={{ 
+                        transition={{
                             type: "spring",
                             stiffness: 260,
                             damping: 20,
@@ -76,14 +79,14 @@ const PaymentSuccessPage = () => {
                         >
                             <CheckCircle2 size={56} strokeWidth={2.5} />
                         </motion.div>
-                        
+
                         {/* Pulse effect */}
-                        <motion.div 
-                            animate={{ 
+                        <motion.div
+                            animate={{
                                 scale: [1, 1.2, 1],
                                 opacity: [0.3, 0, 0.3]
                             }}
-                            transition={{ 
+                            transition={{
                                 duration: 2,
                                 repeat: Infinity,
                                 ease: "easeInOut"
@@ -111,7 +114,7 @@ const PaymentSuccessPage = () => {
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-gray-600 font-semibold">Receipt</span>
-                            <span className="text-[#111111] font-bold">#ORD-{Math.floor(1000 + Math.random() * 9000)}</span>
+                            <span className="text-[#111111] font-bold">{receiptId || "#ORD-..."}</span>
                         </div>
                     </div>
 
@@ -127,7 +130,7 @@ const PaymentSuccessPage = () => {
                                 <span>View My Tickets</span>
                             </motion.button>
                         </Link>
-                        
+
                         <Link href="/" className="block w-full">
                             <motion.button
                                 whileHover={{ scale: 1.02 }}

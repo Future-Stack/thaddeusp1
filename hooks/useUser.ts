@@ -21,10 +21,16 @@ export const useUpdateProfile = () => {
   });
 };
 
-export const useGetUsers = (page: number = 1, limit: number = 10, searchTerm: string = '') => {
+export const useGetUsers = (
+  page: number = 1,
+  limit: number = 20,
+  searchTerm: string = '',
+  sortBy: string = 'createdAt',
+  sortOrder: string = 'desc'
+) => {
   return useQuery({
-    queryKey: ["users", page, limit, searchTerm],
-    queryFn: () => userService.getAllUsers(page, limit, searchTerm),
+    queryKey: ["users", page, limit, searchTerm, sortBy, sortOrder],
+    queryFn: () => userService.getAllUsers(page, limit, searchTerm, sortBy, sortOrder),
   });
 };
 

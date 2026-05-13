@@ -5,6 +5,7 @@ import AnimationWrapper from '@/components/AnimationWrapper';
 import WinnerModal from './WinnerModal';
 import { useEventAdminStats } from '@/hooks/useEvents';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRunDraw } from '@/hooks/useDraws';
 
 interface RegionStatsCardProps {
     eventId: string;
@@ -19,8 +20,14 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { data: statsData, isLoading, isError } = useEventAdminStats(eventId);
+    const { mutate: runDraw, data: winnerData, isPending: isDrawing } = useRunDraw();
 
     const stats = statsData?.data;
+
+    const handleSelectWinner = () => {
+        setIsModalOpen(true);
+        runDraw({ eventId, method: "MANUAL" });
+    };
 
     return (
         <div className="mb-10">
@@ -39,11 +46,11 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                             <p className="text-gray-400 text-sm">Draw Week: {drawWeek}</p>
                         </div>
                         <button 
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={handleSelectWinner}
                             className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={isLoading || isError}
+                            disabled={isLoading || isError || isDrawing}
                         >
-                            Select Winner
+                            {isDrawing ? "Selecting..." : "Select Winner"}
                         </button>
                     </div>
 
@@ -90,9 +97,11 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
             <WinnerModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                regionName={regionName}
+                regionName={regionName}  
+                winnerData={winnerData}
+                isLoading={isDrawing}
+                runDraw={runDraw}
                 eventId={eventId}
-                drawWeek={drawWeek}
             />
         </div>
     );
