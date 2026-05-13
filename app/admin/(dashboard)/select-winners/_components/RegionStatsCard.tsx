@@ -87,10 +87,12 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                 </div>
             </AnimationWrapper>
 
-            <WinnerModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+            <WinnerModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 regionName={regionName}
+                eventId={eventId}
+                drawWeek={drawWeek}
             />
         </div>
     );
