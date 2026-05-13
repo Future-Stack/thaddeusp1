@@ -5,11 +5,16 @@ export interface BuyTicketDto {
   quantity: number;
 }
 
+export interface BuyTicketResponseData {
+  url: string;
+  [key: string]: any;
+}
+
 export interface BuyTicketResponse {
   statusCode: number;
   path: string;
   timestamp: string;
-  data: any; // The user didn't provide the exact response data, so using any for now
+  data: BuyTicketResponseData;
   message?: string;
 }
 

@@ -53,6 +53,43 @@ export interface RunningEventResponse {
   data: Event;
 }
 
+export interface EventStats {
+  totalTickets: number;
+  poolTotal: number;
+  totalParticipants: number;
+}
+
+export interface EventStatsResponse {
+  statusCode: number;
+  path: string;
+  timestamp: string;
+  data: EventStats;
+}
+
+export interface EventAdminUser {
+  userId: string;
+  name: string;
+  email: string;
+  ticketAmount: number;
+  totalPaid: number;
+  purchasedDate: string;
+}
+
+export interface EventAdminUsersResponse {
+  statusCode: number;
+  path: string;
+  timestamp: string;
+  data: {
+    data: EventAdminUser[];
+    meta: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
+
 export const eventService = {
   create: async (data: CreateEventDto) => {
     const response = await apiClient.post('/events', data);
@@ -71,6 +108,16 @@ export const eventService = {
 
   update: async (id: string, data: Partial<CreateEventDto>) => {
     const response = await apiClient.patch(`/events/${id}`, data);
+    return response.data;
+  },
+
+  getAdminStats: async (id: string): Promise<EventStatsResponse> => {
+    const response = await apiClient.get(`/events/${id}/admin/stats`);
+    return response.data;
+  },
+
+  getAdminUsers: async (id: string, params?: { page?: number; limit?: number; searchTerm?: string }): Promise<EventAdminUsersResponse> => {
+    const response = await apiClient.get(`/events/${id}/admin/users`, { params });
     return response.data;
   },
 

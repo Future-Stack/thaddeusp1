@@ -90,9 +90,7 @@ const TicketPage = () => {
                         <h1 className="text-[32px] md:text-[38px] font-black text-[#111111] mb-2 tracking-tight">
                             Buy Your Tickets
                         </h1>
-                        <p className="text-gray-500 font-medium">
-                            {event.description || "Don't miss out—grab your tickets now"}
-                        </p>
+                      
                         {stats && stats.totalPrizeCost > 0 && (
                             <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 rounded-full border border-green-100">
                                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />

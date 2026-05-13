@@ -4,80 +4,79 @@ import React, { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import { useRunDraw } from '@/hooks/useDraws';
-import { RotateCcw, Mail, Check, Ticket, Store } from 'lucide-react';
+import AnimationWrapper from '@/components/AnimationWrapper';
+
+interface WinnerModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    regionName: string;
+}
+
+import { RotateCcw, Mail, Check, X, Gift, Store, Info, Phone, MapPin, Ticket } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface WinnerModalProps {
     isOpen: boolean;
     onClose: () => void;
     regionName: string;
-    eventId: string;
-    drawWeek: string;
 }
 
 type ViewState = 'selecting' | 'details';
 type TabState = 'winner' | 'email';
 
-const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, eventId, drawWeek }) => {
+const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName }) => {
     const [currentView, setCurrentView] = useState<ViewState>('selecting');
     const [activeTab, setActiveTab] = useState<TabState>('winner');
-    const { mutate: runDraw, isPending, data: drawResultData } = useRunDraw();
-
-    const drawResult = drawResultData?.data;
+    const [winner, setWinner] = useState<string | null>(null);
 
     useEffect(() => {
-        if (isOpen && eventId) {
+        if (isOpen) {
             setCurrentView('selecting');
             setActiveTab('winner');
-            
-            // Trigger the actual draw API
-            runDraw({ eventId, method: 'MANUAL' }, {
-                onSuccess: () => {
-                    // Give the animation some time to breathe before showing results
-                    setTimeout(() => {
-                        setCurrentView('details');
-                        triggerConfetti();
-                    }, 2000);
-                },
-                onError: () => {
-                    onClose(); // Close on error as the hook handles toast notification
-                }
-            });
+            setWinner(null);
+
+            // Simulate selection process
+            const timer = setTimeout(() => {
+                setCurrentView('details');
+                setWinner("Sarah Johnson"); // Example winner
+
+                // Trigger confetti
+                const duration = 3 * 1000;
+                const animationEnd = Date.now() + duration;
+                const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+                const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+                const interval: any = setInterval(function () {
+                    const timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    const particleCount = 50 * (timeLeft / duration);
+                    confetti({
+                        ...defaults,
+                        particleCount,
+                        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                    });
+                    confetti({
+                        ...defaults,
+                        particleCount,
+                        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                    });
+                }, 250);
+            }, 4000);
+
+            return () => clearTimeout(timer);
         }
-    }, [isOpen, eventId, runDraw, onClose]);
-
-    const triggerConfetti = () => {
-        const duration = 3 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
-
-        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-        const interval: any = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({
-                ...defaults,
-                particleCount,
-                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-            });
-            confetti({
-                ...defaults,
-                particleCount,
-                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-            });
-        }, 250);
-    };
+    }, [isOpen]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className={currentView === 'details' ? "max-w-[500px]" : "max-w-[450px]"}>
-            <div className={`relative ${currentView === 'selecting' ? 'p-10 text-center' : 'p-0'}`}>
+            <div className={`relative ${currentView === 'details' ? 'p-0' : 'p-10 text-center'}`}>
+
+
                 <AnimatePresence mode="wait">
                     {currentView === 'selecting' && (
                         <motion.div
@@ -103,7 +102,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                         </motion.div>
                     )}
 
-                    {currentView === 'details' && drawResult && (
+                    {currentView === 'details' && (
                         <motion.div
                             key="details"
                             initial={{ opacity: 0 }}
@@ -117,7 +116,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                     <h2 className="text-2xl font-black text-gray-900">Winner Selection</h2>
                                 </div>
                                 <p className="text-gray-400 text-sm font-medium">
-                                    {regionName} — {drawWeek}
+                                    {regionName} — Week of April 14-20, 2026
                                 </p>
                             </div>
 
@@ -148,7 +147,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                 <Ticket className="w-20 h-20 rotate-12 text-orange-500" />
                                             </div>
                                             <div className="relative inline-block mb-4">
-                                                <div className="w-28 h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center">
+                                                <div className="w-28 h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
                                                     <Image
                                                         src="/user.png"
                                                         alt="Winner"
@@ -158,27 +157,25 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                     />
                                                 </div>
                                             </div>
-                                            <h3 className="text-2xl font-black text-gray-900 mb-1">{drawResult.winner.fullName}</h3>
-                                            <p className="text-gray-500 font-medium mb-6">{drawResult.winner.email}</p>
+                                            <h3 className="text-2xl font-black text-gray-900 mb-1">{winner}</h3>
+                                            <p className="text-gray-500 font-medium mb-6">sarah@example.com</p>
 
                                             <div className="bg-white rounded-2xl p-5 shadow-sm space-y-3">
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-gray-400 font-bold text-sm">Tickets Held:</span>
-                                                    <span className="text-orange-600 font-black">{drawResult.totalTickets}</span>
+                                                    <span className="text-orange-600 font-black">5</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-gray-400 font-bold text-sm">Winning Entry:</span>
-                                                    <span className="text-purple-600 font-black">#{drawResult.winningTicket.ticketNumber}</span>
+                                                    <span className="text-purple-600 font-black">#8</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-gray-400 font-bold text-sm">Total Participants:</span>
-                                                    <span className="text-gray-900 font-black">{drawResult.totalParticipants}</span>
+                                                    <span className="text-gray-400 font-bold text-sm">Total Entries:</span>
+                                                    <span className="text-gray-900 font-black">15</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-gray-400 font-bold text-sm">Win Probability:</span>
-                                                    <span className="text-green-500 font-black">
-                                                        {((drawResult.totalTickets / (drawResult.totalParticipants * 4)) * 100).toFixed(2)}%
-                                                    </span>
+                                                    <span className="text-green-500 font-black">33.33%</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -191,7 +188,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                             <ul className="space-y-2 text-blue-800 text-sm font-medium">
                                                 <li className="flex gap-2">
                                                     <span className="text-blue-400">•</span>
-                                                    All ticket entries were pooled
+                                                    All 15 ticket entries were pooled
                                                 </li>
                                                 <li className="flex gap-2">
                                                     <span className="text-blue-400">•</span>
@@ -199,33 +196,19 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                 </li>
                                                 <li className="flex gap-2">
                                                     <span className="text-blue-400">•</span>
-                                                    A random ticket was selected: #{drawResult.winningTicket.ticketNumber}
+                                                    A random entry was selected: #8
                                                 </li>
                                                 <li className="flex gap-2">
                                                     <span className="text-blue-400">•</span>
-                                                    {drawResult.winner.fullName} was identified as the owner
+                                                    {winner} held 5 tickets, giving them a 33.33% chance
                                                 </li>
                                             </ul>
                                         </div>
 
                                         {/* Actions */}
                                         <div className="flex gap-3">
-                                            <button 
-                                                onClick={() => {
-                                                    setCurrentView('selecting');
-                                                    runDraw({ eventId, method: 'MANUAL' }, {
-                                                        onSuccess: () => {
-                                                            setTimeout(() => {
-                                                                setCurrentView('details');
-                                                                triggerConfetti();
-                                                            }, 2000);
-                                                        }
-                                                    });
-                                                }}
-                                                className="flex-1 border-2 border-gray-100 py-3.5 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all disabled:opacity-50"
-                                                disabled={isPending}
-                                            >
-                                                <RotateCcw className={`w-4 h-4 ${isPending ? 'animate-spin' : ''}`} />
+                                            <button className="flex-1 border-2 border-gray-100 py-3.5 rounded-2xl font-bold text-gray-700 flex items-center justify-center gap-2 hover:bg-gray-50 transition-all">
+                                                <RotateCcw className="w-4 h-4" />
                                                 Pick Different Winner
                                             </button>
                                             <button
@@ -244,7 +227,7 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                         <div className="border border-gray-100 rounded-[2rem] p-6 space-y-6 shadow-sm">
                                             {/* Email Header */}
                                             <div className="space-y-1 text-sm">
-                                                <p className="text-gray-400 font-bold">To: <span className="text-gray-600">{drawResult.winner.email}</span></p>
+                                                <p className="text-gray-400 font-bold">To: <span className="text-gray-600">sarah@example.com</span></p>
                                                 <p className="text-gray-400 font-bold">Subject: <span className="text-gray-600">🎉 Congratulations! You Won This Week's Lucky Slice Draw!</span></p>
                                             </div>
 
@@ -257,12 +240,12 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                         </div>
                                                     </div>
                                                     <h4 className="text-3xl font-black text-[#FF4D00] mb-1">You're a Winner!</h4>
-                                                    <p className="text-orange-900 font-bold opacity-70 text-sm">Congratulations, {drawResult.winner.fullName.split(' ')[0]}!</p>
+                                                    <p className="text-orange-900 font-bold opacity-70 text-sm">Congratulations, Sarah!</p>
                                                 </div>
 
                                                 <div className="space-y-4 text-gray-600 text-sm font-medium">
-                                                    <p>Dear {drawResult.winner.fullName},</p>
-                                                    <p>Great news! You've won this week's Lucky Slice draw for the <span className="font-bold text-gray-900">{regionName}</span> region!</p>
+                                                    <p>Dear {winner},</p>
+                                                    <p>Great news! You've won this week's Lucky Slice draw for the <span className="font-bold text-gray-900">New York</span> region!</p>
                                                 </div>
 
                                                 {/* Prize Box */}
@@ -285,16 +268,20 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                     </h5>
                                                     <div className="space-y-1.5 text-xs font-bold text-gray-600">
                                                         <div className="flex gap-2">
-                                                            <span className="text-gray-400 min-w-[60px]">Event:</span>
-                                                            <span className="text-gray-900">{drawResult.event.name}</span>
+                                                            <span className="text-gray-400 min-w-[60px]">Vendor:</span>
+                                                            <span className="text-gray-900">Joe's Pizza NYC</span>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <span className="text-gray-400 min-w-[60px]">Ticket:</span>
-                                                            <span className="text-gray-900">{drawResult.winningTicket.ticketNumber}</span>
+                                                            <span className="text-gray-400 min-w-[60px]">Address:</span>
+                                                            <span className="text-gray-900">7 Carmine St, New York, NY 10014</span>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <span className="text-gray-400 min-w-[60px]">Phone:</span>
+                                                            <span className="text-gray-900">(212) 366-1182</span>
                                                         </div>
                                                         <div className="flex gap-2 items-center">
                                                             <span className="text-gray-400 min-w-[60px]">Voucher Code:</span>
-                                                            <span className="bg-white px-2 py-0.5 rounded border border-blue-100 text-blue-600 font-mono">PIZZA-{drawResult.id.slice(0, 8).toUpperCase()}</span>
+                                                            <span className="bg-white px-2 py-0.5 rounded border border-blue-100 text-blue-600 font-mono">PIZZA-M0B8MNZZ</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -305,11 +292,11 @@ const WinnerModal: React.FC<WinnerModalProps> = ({ isOpen, onClose, regionName, 
                                                     <ul className="space-y-2 text-gray-500 text-xs font-bold">
                                                         <li className="flex gap-2">
                                                             <span className="text-gray-300">•</span>
-                                                            Check your voucher in the app
+                                                            Visit Joe's Pizza NYC at the address above
                                                         </li>
                                                         <li className="flex gap-2">
                                                             <span className="text-gray-300">•</span>
-                                                            Present this voucher code to any partner staff
+                                                            Present this voucher code to the staff
                                                         </li>
                                                         <li className="flex gap-2">
                                                             <span className="text-gray-300">•</span>

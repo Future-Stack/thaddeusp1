@@ -64,3 +64,19 @@ export const useDeleteEvent = () => {
     },
   });
 };
+
+export const useEventAdminStats = (id: string) => {
+  return useQuery({
+    queryKey: ['event-stats', id],
+    queryFn: () => eventService.getAdminStats(id),
+    enabled: !!id,
+  });
+};
+
+export const useEventAdminUsers = (id: string, params: { page: number; limit: number; searchTerm: string }) => {
+  return useQuery({
+    queryKey: ['event-users', id, params],
+    queryFn: () => eventService.getAdminUsers(id, params),
+    enabled: !!id,
+  });
+};

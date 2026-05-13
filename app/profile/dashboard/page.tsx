@@ -3,13 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import AnimationWrapper from '@/components/AnimationWrapper';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 import BuyTicketsModal from './BuyTicketsModal';
 import Link from 'next/link';
-
-// Mock Data
-
+import { useMyTickets, useMyTicketsByEvent } from '@/hooks/useTickets';
+import { useGetMe } from '@/hooks/useAuth';
+import { useGetDraws, useGetWinners } from '@/hooks/useDraws';
+import { useRunningEvent } from '@/hooks/useEvents';
+import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Ticket as TicketIcon } from 'lucide-react';
+import type { Ticket } from '@/services/ticket.service';
 
 const Countdown = ({ targetDate }: { targetDate?: string }) => {
   const [timeLeft, setTimeLeft] = useState({
@@ -61,29 +66,77 @@ const Countdown = ({ targetDate }: { targetDate?: string }) => {
   );
 };
 
-import { useMyTickets } from '@/hooks/useTickets';
-import { useGetMe } from '@/hooks/useAuth';
-import { useGetDraws, useGetWinners } from '@/hooks/useDraws';
-import { format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Ticket as TicketIcon } from 'lucide-react';
+function getUniqueEvents(tickets: Ticket[]) {
+  const map = new Map<string, { id: string; name: string; drawDate?: string; status?: string }>();
+  for (const tkt of tickets) {
+    if (tkt.eventId && !map.has(tkt.eventId)) {
+      map.set(tkt.eventId, {
+        id: tkt.eventId,
+        name: tkt.event?.name || tkt.eventId,
+        drawDate: tkt.event?.drawDate,
+        status: tkt.event?.status,
+      });
+    }
+  }
+  return Array.from(map.values());
+}
 
 export default function UserDashboard() {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
-  const { data: ticketsResponse, isLoading: isTicketsLoading } = useMyTickets();
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  // Fetch all tickets to build the event list
+  const { data: allTicketsResponse, isLoading: isAllTicketsLoading } = useMyTickets();
+  const allTickets: Ticket[] = allTicketsResponse?.data?.data || [];
+  const events = getUniqueEvents(allTickets);
+
+  // Auto-select first event once loaded
+  useEffect(() => {
+    if (events.length > 0 && selectedEventId === null) {
+      setSelectedEventId(events[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events.length]);
+
+  // Fetch tickets filtered by selected event
+  const {
+    data: filteredResponse,
+    isLoading: isFilteredLoading,
+  } = useMyTicketsByEvent(selectedEventId || undefined);
+
+  const tickets: Ticket[] = selectedEventId
+    ? (filteredResponse?.data?.data || [])
+    : allTickets;
+
+  const isTicketsLoading = isAllTicketsLoading || (!!selectedEventId && isFilteredLoading);
+
   const { data: userResponse, isLoading: isUserLoading } = useGetMe();
   const { data: drawsResponse, isLoading: isDrawsLoading, isError: isDrawsError } = useGetDraws(1, 10);
   const { data: winnersResponse, isLoading: isWinnersLoading } = useGetWinners(1, 10);
 
-  const tickets = ticketsResponse?.data?.data || [];
   const user = userResponse?.user;
   const draws = drawsResponse?.data?.data || [];
   const winners = winnersResponse?.data?.data || [];
-
   const lastWinner = winners.find((w: any) => w.isLastWinner);
 
-  // Get draw date from the most recent ticket's event
-  const nextDrawDate = tickets[0]?.event?.drawDate;
+  const { data: runningEventResponse } = useRunningEvent();
+  const runningEvent = runningEventResponse?.data ?? null;
+
+  const selectedEvent = events.find(e => e.id === selectedEventId);
+  const isUpcoming = selectedEvent?.status?.toUpperCase() === 'UPCOMING';
+  const nextDrawDate = isUpcoming ? (selectedEvent?.drawDate || tickets[0]?.event?.drawDate) : undefined;
+
+  // The event to pass to the modal: prefer the selected tab event, fall back to the running event
+  const modalEvent = selectedEvent
+    ? {
+        id: selectedEvent.id,
+        name: selectedEvent.name,
+        drawDate: selectedEvent.drawDate ?? '',
+        ticketClose: tickets[0]?.event?.ticketClose ?? '',
+        ticketPrice: (tickets[0] as any)?.event?.ticketPrice ?? runningEvent?.ticketPrice ?? 1,
+        status: (selectedEvent.status as any) ?? 'UPCOMING',
+      }
+    : runningEvent;
 
   return (
     <div className="min-h-screen bg-[#FFF9F0] font-inter selection:bg-orange-200">
@@ -98,13 +151,13 @@ export default function UserDashboard() {
               <>Hey {user?.fullName?.split(' ')[0] || 'User'} <span className="animate-bounce-slow">👋</span></>
             )}
           </h1>
-          <p className="text-gray-500 mt-2 text-[16px]">Here's your lottery dashboard</p>
+          <p className="text-gray-500 mt-2 text-[16px]">Here&apos;s your lottery dashboard</p>
         </AnimationWrapper>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          {/* Left Side (col-span-8) */}
+          {/* Left Side */}
           <div className="lg:col-span-9 space-y-6">
 
             {/* Success Banner */}
@@ -122,65 +175,156 @@ export default function UserDashboard() {
                 <Link href="/profile/my-vouchers"
                   className="bg-white text-[#059669] font-bold px-8 py-4 rounded-2xl shadow-md flex items-center gap-3 hover:shadow-xl transition-all"
                 >
-                  View & Download Voucher
+                  View &amp; Download Voucher
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </Link>
               </div>
             </AnimationWrapper>
-            <div className="grid grid-cols-1 gap-6">
 
-              {/* Active Tickets */}
-              <AnimationWrapper animationType="fadeUp" delay={0.2} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30 flex flex-col h-full hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] transition-shadow duration-500">
-                <h3 className="text-2xl font-bold mb-8 text-gray-900">Active Tickets</h3>
+            {/* Active Tickets */}
+            <AnimationWrapper animationType="fadeUp" delay={0.2} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30 flex flex-col hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] transition-shadow duration-500">
+              <h3 className="text-2xl font-bold mb-6 text-gray-900">Active Tickets</h3>
 
-                {isTicketsLoading ? (
-                  <Skeleton className="h-40 w-full rounded-2xl" />
-                ) : nextDrawDate ? (
+              {/* Event Tabs */}
+              {isAllTicketsLoading ? (
+                <div className="flex gap-2 mb-6 flex-wrap">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-9 w-28 rounded-full" />)}
+                </div>
+              ) : events.length > 0 ? (
+                <div className="flex gap-2 mb-6 flex-wrap">
+                  {events.map(event => {
+                    const isCompleted = event.status?.toUpperCase() === 'COMPLETED';
+                    const isSelected = selectedEventId === event.id;
+                    return (
+                      <motion.button
+                        key={event.id}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => setSelectedEventId(event.id)}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 flex items-center gap-2 ${
+                          isSelected
+                            ? 'bg-[#F54900] text-white border-[#F54900] shadow-md shadow-orange-100'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-[#F54900] hover:text-[#F54900]'
+                        }`}
+                      >
+                        {event.name}
+                        {isCompleted && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                            isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
+                          }`}>
+                            Ended
+                          </span>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              {/* Countdown — only for UPCOMING events */}
+              {isTicketsLoading ? (
+                <Skeleton className="h-40 w-full rounded-2xl mb-6" />
+              ) : isUpcoming && nextDrawDate ? (
+                <div className="mb-6">
                   <Countdown targetDate={nextDrawDate} />
-                ) : null}
+                </div>
+              ) : !isTicketsLoading && selectedEvent && !isUpcoming ? (
+                <div className="mb-6 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center gap-3">
+                  <span className="text-2xl">🏁</span>
+                  <div>
+                    <p className="font-semibold text-gray-700 text-sm">Draw Completed</p>
+                    <p className="text-xs text-gray-400 mt-0.5">This event has already concluded</p>
+                  </div>
+                </div>
+              ) : null}
 
-                <div className="mt-10 space-y-4 grow">
-                  <p className="text-lg font-bold text-gray-400 font-inter mb-4">Your Tickets</p>
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-lg font-bold text-gray-400 font-inter">
+                    {selectedEvent ? selectedEvent.name : 'Your Tickets'}
+                  </p>
+                  {!isTicketsLoading && tickets.length > 0 && (
+                    <span className="text-xs font-semibold bg-orange-50 text-orange-500 border border-orange-100 px-3 py-1 rounded-full">
+                      {tickets.length} ticket{tickets.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
 
+                {/* Scrollable ticket list */}
+                <AnimatePresence mode="wait">
+                <div className="max-h-64 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-transparent">
                   {isTicketsLoading ? (
-                    <div className="space-y-4">
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="space-y-4"
+                    >
                       {[1, 2, 3].map((i) => (
                         <Skeleton key={i} className="h-[58px] w-full rounded-2xl" />
                       ))}
-                    </div>
+                    </motion.div>
                   ) : tickets.length > 0 ? (
-                    tickets.map((tkt, idx) => (
-                      <motion.div
-                        key={tkt.id || idx}
-                        whileHover={{ x: 5 }}
-                        className="bg-[#F8F9FA] border border-primary/20 p-4 rounded-2xl text-[14px] font-bold text-[#0A0A0A] flex items-center justify-between group"
-                      >
-                        <span>{tkt.ticketNumber}</span>
-                        <span className="w-2 h-2 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </motion.div>
-                    ))
+                    <motion.div
+                      key={selectedEventId || 'all'}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="space-y-3"
+                    >
+                      {tickets.map((tkt, idx) => (
+                        <motion.div
+                          key={tkt.id || idx}
+                          whileHover={{ x: 5 }}
+                          className="bg-[#F8F9FA] border border-primary/20 p-4 rounded-2xl text-[14px] font-bold text-[#0A0A0A] flex items-center justify-between group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <TicketIcon className="w-4 h-4 text-[#F54900] opacity-70" />
+                            <span>{tkt.ticketNumber}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tkt.status === 'active'
+                                ? 'bg-green-50 text-green-600 border border-green-100'
+                                : 'bg-gray-100 text-gray-500 border border-gray-200'
+                              }`}>
+                              {tkt.status}
+                            </span>
+                            <span className="w-2 h-2 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
                   ) : (
-                    <div className="bg-[#FFF9F2] border border-[#FFE7C8] rounded-2xl p-8 text-center">
+                    <motion.div
+                      key="empty"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="bg-[#FFF9F2] border border-[#FFE7C8] rounded-2xl p-8 text-center"
+                    >
                       <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
                         <TicketIcon className="w-6 h-6 text-[#F54900] opacity-50" />
                       </div>
-                      <p className="text-gray-500 font-medium text-sm">No active tickets found</p>
+                      <p className="text-gray-500 font-medium text-sm">No tickets found for this event</p>
                       <p className="text-[12px] text-gray-400 mt-1">Get your first ticket to enter the draw!</p>
-                    </div>
+                    </motion.div>
                   )}
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsBuyModalOpen(true)}
-                  className="w-full bg-[#F54900] text-white font-black py-5 rounded-2xl mt-10 shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all uppercase tracking-widest text-sm"
-                >
-                  Buy More Tickets
-                </motion.button>
-              </AnimationWrapper>
-            </div>
+                </AnimatePresence>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setIsBuyModalOpen(true)}
+                className="w-full bg-[#F54900] text-white font-black py-5 rounded-2xl mt-6 shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all uppercase tracking-widest text-sm"
+              >
+                Buy More Tickets
+              </motion.button>
+            </AnimationWrapper>
 
             {/* Past Draws */}
             <AnimationWrapper animationType="fadeUp" delay={0.4} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30">
@@ -229,7 +373,7 @@ export default function UserDashboard() {
 
           </div>
 
-          {/* Right Side (Winner Card - col-span-4) */}
+          {/* Right Side - Winner Card */}
           <div className="lg:col-span-3 ">
             <AnimationWrapper animationType="fadeLeft" delay={0.5} className="sticky min-h-170 top-10 bg-[#FAF9F0] border border-primary/30 rounded-xl md:rounded-[38px]">
               {isWinnersLoading ? (
@@ -260,7 +404,7 @@ export default function UserDashboard() {
                     <div className="flex items-center justify-center text-4xl  -rotate-3 hover:rotate-0 transition-transform cursor-pointer">
                       <Image src="/party.png" width={60} height={60} alt="party" className='mb-2' />
                     </div>
-                    <h3 className="text-3xl font-black text-gray-900 tracking-tight mb-2">This Week's Winner</h3>
+                    <h3 className="text-3xl font-black text-gray-900 tracking-tight mb-2">This Week&apos;s Winner</h3>
                     <p className="text-sm text-gray-500 mb-10 font-medium">Congratulations to our lucky pizza winner!</p>
 
                     <div className="bg-[#FFEDD5] rounded-xl py-3  space-y-6   border border-orange-100/50 mb-6">
@@ -292,6 +436,7 @@ export default function UserDashboard() {
       <BuyTicketsModal
         isOpen={isBuyModalOpen}
         onClose={() => setIsBuyModalOpen(false)}
+        event={modalEvent}
       />
     </div>
   );
