@@ -12,6 +12,7 @@ export interface Ticket {
     name: string;
     drawDate: string;
     ticketClose: string;
+    status?: string; // e.g. 'UPCOMING' | 'COMPLETED'
   };
 }
 
@@ -30,8 +31,9 @@ export interface MyTicketsResponse {
 }
 
 export const ticketService = {
-  getMyTickets: async (): Promise<MyTicketsResponse> => {
-    const response = await apiClient.get('/tickets/my-tickets');
+  getMyTickets: async (eventId?: string): Promise<MyTicketsResponse> => {
+    const params = eventId ? { eventId } : {};
+    const response = await apiClient.get('/tickets/my-tickets', { params });
     return response.data;
   },
 };

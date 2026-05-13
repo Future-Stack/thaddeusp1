@@ -3,38 +3,32 @@
 import React, { useState } from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import WinnerModal from './WinnerModal';
+import { useEventAdminStats } from '@/hooks/useEvents';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RegionStatsCardProps {
+    eventId: string;
     regionName: string;
     drawWeek: string;
-    totalTickets: number;
-    poolTotal: string;
-    participants: number;
 }
 
 const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
+    eventId,
     regionName,
     drawWeek,
-    totalTickets,
-    poolTotal,
-    participants,
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { data: statsData, isLoading, isError } = useEventAdminStats(eventId);
+
+    const stats = statsData?.data;
 
     return (
         <div className="mb-10">
             <div className="flex justify-between items-center mb-6">
                 <AnimationWrapper animationType="fadeRight" delay={0.3}>
-                    <h2 className="text-xl font-bold text-[#111827]">Region Overview</h2>
+                    <h2 className="text-xl font-bold text-[#111827]">Event Overview</h2>
                 </AnimationWrapper>
-                <AnimationWrapper animationType="fadeLeft" delay={0.3}>
-                    <div className="relative">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
-                            {regionName}
-                            <ChevronDownIcon />
-                        </button>
-                    </div>
-                </AnimationWrapper>
+            
             </div>
 
             <AnimationWrapper animationType="fadeUp" delay={0.4}>
@@ -46,31 +40,50 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                         </div>
                         <button 
                             onClick={() => setIsModalOpen(true)}
-                            className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95"
+                            className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isLoading || isError}
                         >
                             Select Winner
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Total Tickets */}
-                        <div className="bg-[#F0F7FF] rounded-2xl p-6 border border-blue-50">
-                            <span className="text-blue-500 text-xs font-bold block mb-2">Total Tickets</span>
-                            <span className="text-[#111827] text-3xl font-extrabold">{totalTickets}</span>
+                    {isError ? (
+                        <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center text-red-500">
+                            Failed to load statistics. Please try again later.
                         </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Total Tickets */}
+                            <div className="bg-[#F0F7FF] rounded-2xl p-6 border border-blue-50">
+                                <span className="text-blue-500 text-xs font-bold block mb-2">Total Tickets</span>
+                                {isLoading ? (
+                                    <Skeleton className="h-9 w-20 bg-blue-100" />
+                                ) : (
+                                    <span className="text-[#111827] text-3xl font-extrabold">{stats?.totalTickets || 0}</span>
+                                )}
+                            </div>
 
-                        {/* Pool Total */}
-                        <div className="bg-[#F0FFF7] rounded-2xl p-6 border border-green-50">
-                            <span className="text-green-500 text-xs font-bold block mb-2">Pool Total</span>
-                            <span className="text-[#111827] text-3xl font-extrabold">{poolTotal}</span>
-                        </div>
+                            {/* Pool Total */}
+                            <div className="bg-[#F0FFF7] rounded-2xl p-6 border border-green-50">
+                                <span className="text-green-500 text-xs font-bold block mb-2">Pool Total</span>
+                                {isLoading ? (
+                                    <Skeleton className="h-9 w-20 bg-green-100" />
+                                ) : (
+                                    <span className="text-[#111827] text-3xl font-extrabold">${stats?.poolTotal || 0}</span>
+                                )}
+                            </div>
 
-                        {/* Participants */}
-                        <div className="bg-[#FAF5FF] rounded-2xl p-6 border border-purple-50">
-                            <span className="text-purple-500 text-xs font-bold block mb-2">Participants</span>
-                            <span className="text-[#111827] text-3xl font-extrabold">{participants}</span>
+                            {/* Participants */}
+                            <div className="bg-[#FAF5FF] rounded-2xl p-6 border border-purple-50">
+                                <span className="text-purple-500 text-xs font-bold block mb-2">Participants</span>
+                                {isLoading ? (
+                                    <Skeleton className="h-9 w-20 bg-purple-100" />
+                                ) : (
+                                    <span className="text-[#111827] text-3xl font-extrabold">{stats?.totalParticipants || 0}</span>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </AnimationWrapper>
 
