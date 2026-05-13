@@ -4,8 +4,9 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin } from 'lucide-react';
+import { ArrowRightIcon, MapPin } from 'lucide-react';
 import BuyTicketsModal from './BuyTicketsModal';
+import AddReviewModal from './AddReviewModal';
 import Link from 'next/link';
 import { useMyTickets, useMyTicketsByEvent } from '@/hooks/useTickets';
 import { useGetMe } from '@/hooks/useAuth';
@@ -83,6 +84,7 @@ function getUniqueEvents(tickets: Ticket[]) {
 
 export default function UserDashboard() {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   // Fetch all tickets to build the event list
@@ -129,13 +131,13 @@ export default function UserDashboard() {
   // The event to pass to the modal: prefer the selected tab event, fall back to the running event
   const modalEvent = selectedEvent
     ? {
-        id: selectedEvent.id,
-        name: selectedEvent.name,
-        drawDate: selectedEvent.drawDate ?? '',
-        ticketClose: tickets[0]?.event?.ticketClose ?? '',
-        ticketPrice: (tickets[0] as any)?.event?.ticketPrice ?? runningEvent?.ticketPrice ?? 1,
-        status: (selectedEvent.status as any) ?? 'UPCOMING',
-      }
+      id: selectedEvent.id,
+      name: selectedEvent.name,
+      drawDate: selectedEvent.drawDate ?? '',
+      ticketClose: tickets[0]?.event?.ticketClose ?? '',
+      ticketPrice: (tickets[0] as any)?.event?.ticketPrice ?? runningEvent?.ticketPrice ?? 1,
+      status: (selectedEvent.status as any) ?? 'UPCOMING',
+    }
     : runningEvent;
 
   return (
@@ -202,17 +204,15 @@ export default function UserDashboard() {
                         key={event.id}
                         whileTap={{ scale: 0.96 }}
                         onClick={() => setSelectedEventId(event.id)}
-                        className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 flex items-center gap-2 ${
-                          isSelected
-                            ? 'bg-[#F54900] text-white border-[#F54900] shadow-md shadow-orange-100'
-                            : 'bg-white text-gray-600 border-gray-200 hover:border-[#F54900] hover:text-[#F54900]'
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 flex items-center gap-2 ${isSelected
+                          ? 'bg-[#F54900] text-white border-[#F54900] shadow-md shadow-orange-100'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-[#F54900] hover:text-[#F54900]'
+                          }`}
                       >
                         {event.name}
                         {isCompleted && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
-                          }`}>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
+                            }`}>
                             Ended
                           </span>
                         )}
@@ -253,66 +253,66 @@ export default function UserDashboard() {
 
                 {/* Scrollable ticket list */}
                 <AnimatePresence mode="wait">
-                <div className="max-h-64 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-transparent">
-                  {isTicketsLoading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="space-y-4"
-                    >
-                      {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} className="h-[58px] w-full rounded-2xl" />
-                      ))}
-                    </motion.div>
-                  ) : tickets.length > 0 ? (
-                    <motion.div
-                      key={selectedEventId || 'all'}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="space-y-3"
-                    >
-                      {tickets.map((tkt, idx) => (
-                        <motion.div
-                          key={tkt.id || idx}
-                          whileHover={{ x: 5 }}
-                          className="bg-[#F8F9FA] border border-primary/20 p-4 rounded-2xl text-[14px] font-bold text-[#0A0A0A] flex items-center justify-between group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <TicketIcon className="w-4 h-4 text-[#F54900] opacity-70" />
-                            <span>{tkt.ticketNumber}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tkt.status === 'active'
+                  <div className="max-h-64 overflow-y-auto overflow-x-hidden pr-1 scrollbar-thin scrollbar-thumb-orange-200 scrollbar-track-transparent">
+                    {isTicketsLoading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="space-y-4"
+                      >
+                        {[1, 2, 3].map((i) => (
+                          <Skeleton key={i} className="h-[58px] w-full rounded-2xl" />
+                        ))}
+                      </motion.div>
+                    ) : tickets.length > 0 ? (
+                      <motion.div
+                        key={selectedEventId || 'all'}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="space-y-3"
+                      >
+                        {tickets.map((tkt, idx) => (
+                          <motion.div
+                            key={tkt.id || idx}
+                            whileHover={{ x: 5 }}
+                            className="bg-[#F8F9FA] border border-primary/20 p-4 rounded-2xl text-[14px] font-bold text-[#0A0A0A] flex items-center justify-between group"
+                          >
+                            <div className="flex items-center gap-3">
+                              <TicketIcon className="w-4 h-4 text-[#F54900] opacity-70" />
+                              <span>{tkt.ticketNumber}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tkt.status === 'active'
                                 ? 'bg-green-50 text-green-600 border border-green-100'
                                 : 'bg-gray-100 text-gray-500 border border-gray-200'
-                              }`}>
-                              {tkt.status}
-                            </span>
-                            <span className="w-2 h-2 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="empty"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="bg-[#FFF9F2] border border-[#FFE7C8] rounded-2xl p-8 text-center"
-                    >
-                      <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
-                        <TicketIcon className="w-6 h-6 text-[#F54900] opacity-50" />
-                      </div>
-                      <p className="text-gray-500 font-medium text-sm">No tickets found for this event</p>
-                      <p className="text-[12px] text-gray-400 mt-1">Get your first ticket to enter the draw!</p>
-                    </motion.div>
-                  )}
-                </div>
+                                }`}>
+                                {tkt.status}
+                              </span>
+                              <span className="w-2 h-2 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="empty"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="bg-[#FFF9F2] border border-[#FFE7C8] rounded-2xl p-8 text-center"
+                      >
+                        <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
+                          <TicketIcon className="w-6 h-6 text-[#F54900] opacity-50" />
+                        </div>
+                        <p className="text-gray-500 font-medium text-sm">No tickets found for this event</p>
+                        <p className="text-[12px] text-gray-400 mt-1">Get your first ticket to enter the draw!</p>
+                      </motion.div>
+                    )}
+                  </div>
                 </AnimatePresence>
               </div>
 
@@ -375,7 +375,16 @@ export default function UserDashboard() {
 
           {/* Right Side - Winner Card */}
           <div className="lg:col-span-3 ">
-            <AnimationWrapper animationType="fadeLeft" delay={0.5} className="sticky min-h-170 top-10 bg-[#FAF9F0] border border-primary/30 rounded-xl md:rounded-[38px]">
+            <AnimationWrapper animationType="fadeLeft" delay={0.5} className="mb-6">
+              <button 
+                onClick={() => setIsReviewModalOpen(true)}
+                className="bg-white text-[#059669] font-bold px-8 py-4 rounded-2xl shadow-md flex items-center gap-3 hover:shadow-xl transition-all"
+              >
+                Add Review <ArrowRightIcon className="w-5 h-5" />
+              </button>
+            </AnimationWrapper>
+
+            <AnimationWrapper animationType="fadeLeft" delay={0.5} className="sticky min-h-170 top-10 overflow-hidden bg-[#FAF9F0] border border-primary/30 rounded-xl md:rounded-[38px]">
               {isWinnersLoading ? (
                 <div className="p-8 space-y-6">
                   <Skeleton className="h-64 w-full rounded-2xl" />
@@ -385,12 +394,12 @@ export default function UserDashboard() {
                 </div>
               ) : lastWinner ? (
                 <>
-                  <div className="relative h-105 w-full ">
+                  <div className="relative h-105 w-full overflow-hidden">
                     <Image
                       src={lastWinner.profileImg || "/user.png"}
                       alt="Winner"
                       fill
-                      className="w-full h-full object-cover relative md:-translate-y-16  rounded-t-xl md:rounded-t-[38px]"
+                      className="w-full h-full object-contain  relative md:-translate-y-16  rounded-t-xl md:rounded-t-[38px]"
                     />
                   </div>
 
@@ -419,7 +428,10 @@ export default function UserDashboard() {
                         <div className="text-sm text-gray-500 font-bold">Prize: {lastWinner.prize}</div>
                       </div>
                     </div>
+
+
                   </div>
+
                 </>
               ) : (
                 <div className="p-8 text-center text-gray-500">
@@ -437,6 +449,11 @@ export default function UserDashboard() {
         isOpen={isBuyModalOpen}
         onClose={() => setIsBuyModalOpen(false)}
         event={modalEvent}
+      />
+      {/* Add Review Modal */}
+      <AddReviewModal 
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
       />
     </div>
   );

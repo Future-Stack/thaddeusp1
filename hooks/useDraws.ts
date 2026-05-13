@@ -20,12 +20,13 @@ export const useRunDraw = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { eventId: string; method: "MANUAL" | "AUTO" }) =>
+    mutationFn: (data: { eventId: string; method: "MANUAL" }) =>
       drawService.runDraw(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["winners"] });
       queryClient.invalidateQueries({ queryKey: ["draws"] });
       queryClient.invalidateQueries({ queryKey: ["event-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["event-users"] });
       toast.success("Draw completed successfully");
     },
     onError: (error: any) => {

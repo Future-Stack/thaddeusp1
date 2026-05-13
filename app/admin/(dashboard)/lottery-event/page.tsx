@@ -298,7 +298,7 @@ const EventCard = ({
           />
           <StatBox
             label="Tickets Sold"
-            value={`0 / ${event.maxTickets}`} // Mocked as response missing sold count
+            value={`${event.totalParticipants} / ${event.maxTickets}`} // Mocked as response missing sold count
             bgColor="bg-[#F0FDF4]"
             textColor="text-[#16A34A]"
           />

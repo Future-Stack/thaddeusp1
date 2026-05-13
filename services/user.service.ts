@@ -10,12 +10,14 @@ export const userService = {
     return response.data;
   },
 
-  getAllUsers: async (page: number = 1, limit: number = 10, searchTerm: string = '') => {
-    const response = await apiClient.get('/user/admin/list', {
+  getAllUsers: async (page: number = 1, limit: number = 20, searchTerm: string = '', sortBy: string = 'createdAt', sortOrder: string = 'desc') => {
+    const response = await apiClient.get('/admin/users', {
       params: {
         page,
         limit,
         searchTerm,
+        sortBy,
+        sortOrder,
       },
     });
     return response.data;

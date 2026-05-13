@@ -21,7 +21,7 @@ export const drawService = {
     return response.data;
   },
 
-  runDraw: async (data: { eventId: string; method: "MANUAL" | "AUTO" }) => {
+  runDraw: async (data: { eventId: string; method: "MANUAL" }) => {
     const response = await apiClient.post('/draws/run', data);
     return response.data;
   },

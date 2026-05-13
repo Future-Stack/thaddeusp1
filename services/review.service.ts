@@ -10,4 +10,9 @@ export const reviewService = {
     });
     return response.data;
   },
+
+  createReview: async (data: { text: string }) => {
+    const response = await apiClient.post('/reviews', data);
+    return response.data;
+  },
 };

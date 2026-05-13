@@ -29,6 +29,7 @@ export interface Event {
   ticketOpen: string;
   ticketClose: string;
   ticketPrice: number;
+  totalParticipants:string;
   prizeValue: number;
   maxTickets: number;
   isAutoDraw: boolean;

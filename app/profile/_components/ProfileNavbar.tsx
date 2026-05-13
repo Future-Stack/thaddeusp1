@@ -7,60 +7,36 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useGetMe, useLogout } from '@/hooks/useAuth'
 import { User, LogOut, Bell, Settings, Menu, X, ChevronRight } from 'lucide-react'
+import { useGetMyNotifications, useMarkAllNotificationsAsRead, useMarkNotificationAsRead } from '@/hooks/useNotifications'
+import { formatDistanceToNow } from 'date-fns'
+import { Skeleton } from '@/components/ui/skeleton'
 
 type Notification = {
-  id: number
-  type: 'win' | 'voucher' | 'system' | 'promo'
+  id: string
+  type: 'SYSTEM' | 'WIN' | 'VOUCHER' | 'PROMO'
   title: string
-  description: string
-  time: string
-  read: boolean
+  message: string
+  isRead: boolean
+  createdAt: string
 }
 
-const INITIAL_NOTIFICATIONS: Notification[] = [
-  {
-    id: 1,
-    type: 'win',
-    title: '🎉 You\'re a Winner!',
-    description: 'Congratulations! You won the Friday Mega Draw.',
-    time: '2 min ago',
-    read: false,
-  },
-  {
-    id: 2,
-    type: 'voucher',
-    title: '🎟️ Voucher Expiring Soon',
-    description: 'Your voucher #VCH-9921 expires in 24 hours.',
-    time: '1 hr ago',
-    read: false,
-  },
-  {
-    id: 3,
-    type: 'promo',
-    title: '🔥 Weekend Special',
-    description: 'Get 2x entries on all tickets this weekend only!',
-    time: '3 hrs ago',
-    read: false,
-  },
-]
-
-const notifIconMap: Record<Notification['type'], React.ReactNode> = {
-  win: (
+const notifIconMap: Record<string, React.ReactNode> = {
+  WIN: (
     <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
     </div>
   ),
-  voucher: (
+  VOUCHER: (
     <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF5722" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M17 6V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v1" /><line x1="12" y1="12" x2="12" y2="12.01" /></svg>
     </div>
   ),
-  system: (
+  SYSTEM: (
     <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /></svg>
     </div>
   ),
-  promo: (
+  PROMO: (
     <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v6l4 2" /></svg>
     </div>
@@ -72,21 +48,25 @@ const ProfileNavbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
   const notifRef = useRef<HTMLDivElement>(null);
-
   const { data: profileData } = useGetMe();
+  const { data: notificationsResponse, isLoading: isNotificationsLoading } = useGetMyNotifications();
   const { logout } = useLogout();
   const user = profileData?.user;
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const notifications = notificationsResponse?.data?.data || [];
+  const meta = notificationsResponse?.data?.meta;
+  const unreadCount = meta?.unreadCount || 0;
+
+  const { mutate: markAllRead } = useMarkAllNotificationsAsRead();
+  const { mutate: markRead } = useMarkNotificationAsRead();
 
   const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+    markAllRead();
   }
 
-  const handleNotifClick = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+  const handleNotifClick = (id: string) => {
+    markRead(id);
   }
 
   useEffect(() => {
@@ -240,40 +220,51 @@ const ProfileNavbar = () => {
 
                     {/* Notification List */}
                     <div className="max-h-[320px] overflow-y-auto divide-y divide-gray-50">
-                      {notifications.map((notif, i) => (
-                        <motion.button
-                          key={notif.id}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05, duration: 0.2 }}
-                          onClick={() => handleNotifClick(notif.id)}
-                          className={`w-full text-left flex items-start gap-3 px-4 py-3 transition-colors duration-150 ${notif.read ? 'bg-white hover:bg-gray-50' : 'bg-orange-50/60 hover:bg-orange-50'
-                            }`}
-                        >
-                          {notifIconMap[notif.type]}
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-[13px] leading-snug ${notif.read ? 'font-medium text-gray-600' : 'font-bold text-[#1C274C]'}`}>
-                              {notif.title}
-                            </p>
-                            <p className="text-[12px] text-gray-400 mt-0.5 truncate">{notif.description}</p>
-                            <p className="text-[11px] text-gray-300 mt-1">{notif.time}</p>
+                      {isNotificationsLoading ? (
+                        [1, 2, 3].map((i) => (
+                          <div key={i} className="px-4 py-3 flex items-start gap-3">
+                            <Skeleton className="w-9 h-9 rounded-full shrink-0" />
+                            <div className="flex-1 space-y-2">
+                              <Skeleton className="h-4 w-3/4" />
+                              <Skeleton className="h-3 w-full" />
+                              <Skeleton className="h-2 w-1/4" />
+                            </div>
                           </div>
-                          {!notif.read && (
-                            <span className="w-2 h-2 rounded-full bg-[#FF5722] shrink-0 mt-1.5" />
-                          )}
-                        </motion.button>
-                      ))}
+                        ))
+                      ) : notifications.length > 0 ? (
+                        notifications.map((notif, i) => (
+                          <motion.button
+                            key={notif.id}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05, duration: 0.2 }}
+                            onClick={() => handleNotifClick(notif.id)}
+                            className={`w-full text-left flex items-start gap-3 px-4 py-3 transition-colors duration-150 ${notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-orange-50/60 hover:bg-orange-50'
+                              }`}
+                          >
+                            {notifIconMap[notif.type] || notifIconMap.SYSTEM}
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-[13px] leading-snug ${notif.isRead ? 'font-medium text-gray-600' : 'font-bold text-[#1C274C]'}`}>
+                                {notif.title}
+                              </p>
+                              <p className="text-[12px] text-gray-400 mt-0.5 break-words">{notif.message}</p>
+                              <p className="text-[11px] text-gray-300 mt-1">
+                                {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
+                              </p>
+                            </div>
+                            {!notif.isRead && (
+                              <span className="w-2 h-2 rounded-full bg-[#FF5722] shrink-0 mt-1.5" />
+                            )}
+                          </motion.button>
+                        ))
+                      ) : (
+                        <div className="py-10 text-center px-4">
+                          <p className="text-sm text-gray-400">No notifications yet</p>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Footer */}
-                    <div className="px-4 py-3 border-t border-gray-50 bg-gray-50/50">
-                      <button
-                        onClick={() => setIsNotificationOpen(false)}
-                        className="w-full text-center text-[13px] font-semibold text-[#FF5722] hover:text-[#e04e1e] transition-colors"
-                      >
-                        View All Notifications
-                      </button>
-                    </div>
+
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -316,7 +307,7 @@ const ProfileNavbar = () => {
 
 
                       <div className="border-t border-gray-50 mt-1 pt-1">
-                        <button 
+                        <button
                           onClick={logout}
                           className="w-full text-left px-4 py-2 text-[14px] text-red-500 hover:bg-red-50 transition-colors font-medium"
                         >
@@ -415,7 +406,7 @@ const ProfileNavbar = () => {
                     <p className="text-[11px] text-[#8E94A4]">{user?.email || 'No email'}</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={logout}
                   className="w-full py-3 rounded-xl bg-red-50 text-red-500 font-bold text-sm hover:bg-red-100 transition-colors"
                 >
