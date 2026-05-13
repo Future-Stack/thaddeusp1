@@ -71,6 +71,50 @@ export const useLogin = () => {
   });
 };
 
+export const useGoogleLogin = () => {
+  const router = useRouter();
+  const setTokens = useAppStore((state) => state.setTokens);
+  const setUserId = useAppStore((state) => state.setUserId);
+  const setUser = useAppStore((state) => state.setUser);
+  const setRole = useAppStore((state) => state.setRole);
+
+  return useMutation({
+    mutationFn: (payload: any) => authService.googleLogin(payload),
+    onSuccess: (response) => {
+      if (response.data.success) {
+        const { tokens } = response.data.result;
+        setTokens(tokens);
+
+        try {
+          const decoded: any = jwtDecode(tokens.accessToken);
+          if (decoded.sub) {
+            setUserId(decoded.sub);
+          }
+        } catch (e) {
+          console.error('Failed to decode token:', e);
+        }
+
+        toast.success(response.data.result.message || 'Google login successful');
+
+        authService.getMe().then((profileResponse) => {
+          if (profileResponse.data.success) {
+            setUser(profileResponse.data.user);
+            setRole(profileResponse.data.user.role);
+          }
+        });
+
+        router.push('/');
+      } else {
+        toast.error('Google login failed');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Google login failed';
+      toast.error(message);
+    },
+  });
+};
+
 export const useAdminLogin = () => {
   const router = useRouter();
   const setTokens = useAppStore((state) => state.setTokens);

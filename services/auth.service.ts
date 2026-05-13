@@ -98,9 +98,20 @@ export interface GetMeResponse {
   };
 }
 
+export interface GoogleLoginPayload {
+  email: string;
+  name: string;
+  profileImg: string;
+}
+
 export const authService = {
   login: async (payload: LoginPayload): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', payload);
+    return response.data;
+  },
+
+  googleLogin: async (payload: GoogleLoginPayload): Promise<LoginResponse> => {
+    const response = await apiClient.post('/auth/google-login', payload);
     return response.data;
   },
 
