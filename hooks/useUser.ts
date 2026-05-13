@@ -30,7 +30,7 @@ export const useGetUsers = (
 ) => {
   return useQuery({
     queryKey: ["users", page, limit, searchTerm, sortBy, sortOrder],
-    queryFn: () => userService.getAllUsers(page, limit, searchTerm, sortBy, sortOrder),
+    queryFn: () => userService.getAllUsers(),
   });
 };
 
