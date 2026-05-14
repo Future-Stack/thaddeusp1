@@ -1,13 +1,16 @@
 "use client"
 import React, { useState } from 'react';
-import { Search, Download, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Search, Download, ChevronLeft, ChevronRight, Loader2, Edit2 } from 'lucide-react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { useGetUsers } from '@/hooks/useUser';
 import { useDebounce } from '@/hooks/useDebounce';
+import UpdateUserStatusModal from './UpdateUserStatusModal';
 
 const UserList = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
   const limit = 10;
 
@@ -23,7 +26,7 @@ const UserList = () => {
     <AnimationWrapper animationType="fadeUp" delay={0.4}>
       <div className="bg-white rounded-[2.5rem] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.02)] border border-gray-100">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h2 className="text-2xl font-bold text-[#111827]">user list</h2>
+          <h2 className="text-2xl font-bold text-[#111827]">User list</h2>
 
           <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
             <div className="relative w-full sm:w-80">
@@ -36,10 +39,10 @@ const UserList = () => {
                 className="w-full pl-12 pr-4 py-3 bg-[#F9FAFB] border border-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
-            <button className="flex items-center gap-2 px-6 py-3 bg-[#F3F4F6] text-gray-600 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap">
+            {/* <button className="flex items-center gap-2 px-6 py-3 bg-[#F3F4F6] text-gray-600 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap">
               <Download size={18} />
               Export CSV
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -56,6 +59,7 @@ const UserList = () => {
                   <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Ticket Count</th>
                   <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Role</th>
                   <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase">Status</th>
+                  <th className="pb-4 pt-2 text-[11px] font-bold text-gray-400 tracking-wider uppercase text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -67,17 +71,18 @@ const UserList = () => {
                       <td className="py-5"><div className="h-8 w-8 bg-gray-100 rounded-full"></div></td>
                       <td className="py-5"><div className="h-4 bg-gray-100 rounded w-16"></div></td>
                       <td className="py-5"><div className="h-6 bg-gray-100 rounded-full w-20"></div></td>
+                      <td className="py-5 text-right"><div className="h-8 w-8 bg-gray-100 rounded-lg ml-auto"></div></td>
                     </tr>
                   ))
                 ) : isError ? (
                   <tr>
-                    <td colSpan={5} className="py-10 text-center text-red-500">
+                    <td colSpan={6} className="py-10 text-center text-red-500">
                       Error loading users: {(error as any)?.message || 'Something went wrong'}
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-10 text-center text-gray-500">
+                    <td colSpan={6} className="py-10 text-center text-gray-500">
                       No users found
                     </td>
                   </tr>
@@ -101,6 +106,18 @@ const UserList = () => {
                           }`}>
                           {user.status}
                         </span>
+                      </td>
+                      <td className="py-5 text-right">
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setIsUpdateModalOpen(true);
+                          }}
+                          className="p-2 text-gray-400 hover:text-primary hover:bg-indigo-50 rounded-lg transition-all"
+                          title="Update Status"
+                        >
+                          <Edit2 size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -152,6 +169,17 @@ const UserList = () => {
                       {user.status}
                     </span>
                   </div>
+
+                  <button
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setIsUpdateModalOpen(true);
+                    }}
+                    className="mt-2 w-full py-2 bg-gray-50 text-gray-500 text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-all"
+                  >
+                    <Edit2 size={14} />
+                    Update Status
+                  </button>
                 </div>
               ))
             )}
@@ -212,6 +240,15 @@ const UserList = () => {
           </button>
         </div>
       </div>
+
+      <UpdateUserStatusModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+      />
     </AnimationWrapper>
   );
 };

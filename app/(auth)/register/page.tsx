@@ -7,14 +7,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
 import AnimationWrapper from '@/components/AnimationWrapper';
-import { useRegions } from '@/hooks/useRegions';
-import { Region } from '@/services/region.service';
 import { useSignUp } from '@/hooks/useAuth';
 
 const registerSchema = z.object({
     fullName: z.string().min(2, "Full name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
-    regionId: z.string().min(1, "Please select a region"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -28,9 +25,6 @@ const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const { data: regionsData, isLoading: regionsLoading } = useRegions();
-    const regions = regionsData || [];
-
     const { mutate: signUp, isPending: isSubmitting } = useSignUp();
 
     const {
@@ -42,7 +36,6 @@ const RegisterPage = () => {
         defaultValues: {
             fullName: '',
             email: '',
-            regionId: '',
             password: '',
             confirmPassword: '',
         }
@@ -127,32 +120,6 @@ const RegisterPage = () => {
                             {errors.email && <p className="text-red-500 text-xs mt-1 ml-1 font-medium">{errors.email.message}</p>}
                         </div>
 
-                        {/* Region */}
-                        <div>
-                            <label className="block text-sm font-bold text-gray-800 mb-2.5 ml-1">
-                                Region
-                            </label>
-                            <div className="relative">
-                                <select
-                                    {...register('regionId')}
-                                    className={`w-full px-6 py-2 bg-[#F8F9FA] border ${errors.regionId ? 'border-red-500' : 'border-primary'} rounded-xl focus:outline-none focus:border-primary/30 transition-all text-gray-700 appearance-none cursor-pointer`}
-                                    defaultValue=""
-                                >
-                                    <option value="" disabled>
-                                        {regionsLoading ? 'Loading regions...' : 'Select your region'}
-                                    </option>
-                                    {regions.map((region: Region) => (
-                                        <option key={region.id} value={region.id}>
-                                            {region.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                                </div>
-                            </div>
-                            {errors.regionId && <p className="text-red-500 text-xs mt-1 ml-1 font-medium">{errors.regionId.message}</p>}
-                        </div>
 
                         {/* Password */}
                         <div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function RealStories() {
     return (
-        <section className="relative py-12 md:py-24 bg-[#FFFBF7] overflow-hidden">
+        <section id="real-stories" className="relative py-12 md:py-24 bg-[#FFFBF7] overflow-hidden">
             {/* 🔹 Background Line */}
             <div className="absolute inset-0 pointer-events-none">
                 <Image

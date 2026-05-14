@@ -4,7 +4,7 @@ const AccountSecurityCard = () => {
   return (
     <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
       <h2 className="text-xl font-bold text-[#1F2937] mb-6">Account Security</h2>
-      
+
       <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-6 flex items-center justify-between">
         <div>
           <h3 className="font-bold text-[#1F2937]">Password</h3>

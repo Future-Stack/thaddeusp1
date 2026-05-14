@@ -51,7 +51,7 @@ function Navbar() {
                 >
                   <div className="relative w-12 h-12 rounded-full border-2 border-black overflow-hidden  shadow-sm bg-gray-100">
                     <Image
-                      src={user?.profileImg || "/images/profile.jpg"}
+                      src={user?.profileImg || "/profile.webp"}
                       alt="User Avatar"
                       fill
                       className="object-cover"

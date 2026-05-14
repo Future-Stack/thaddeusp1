@@ -40,3 +40,30 @@ export const useGetUsersStats = () => {
     queryFn: () => userService.getUserStats(),
   });
 };
+
+export const useGetMeStats = () => {
+  return useQuery({
+    queryKey: ["me-stats"],
+    queryFn: () => userService.getMeStats(),
+  });
+};
+
+export const useUpdateUserStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string, status: 'active' | 'suspended' }) =>
+      userService.updateUserStatus(id, status),
+    onSuccess: (response) => {
+      if (response?.statusCode === 200 || response?.success || response?.data?.success) {
+        toast.success(response.message || "User status updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+      } else {
+        toast.error(response.message || "Failed to update status");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};

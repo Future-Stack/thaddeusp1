@@ -3,7 +3,7 @@ import apiClient from "@/lib/api-client";
 export interface CreateEventDto {
   name: string;
   description: string;
-  regionId: string;
+  // regionId: string;
   drawDate: string;
   ticketOpen: string;
   ticketClose: string;
@@ -11,6 +11,7 @@ export interface CreateEventDto {
   prizeValue: number;
   maxTickets: number;
   isAutoDraw: boolean;
+  status?: "UPCOMING" | "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
 }
 
 export interface Region {
@@ -29,7 +30,7 @@ export interface Event {
   ticketOpen: string;
   ticketClose: string;
   ticketPrice: number;
-  totalParticipants:string;
+  totalParticipants: number;
   prizeValue: number;
   maxTickets: number;
   isAutoDraw: boolean;
@@ -44,7 +45,15 @@ export interface EventsResponse {
   statusCode: number;
   path: string;
   timestamp: string;
-  data: Event[];
+  data: {
+    data: Event[];
+    meta: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
 }
 
 export interface RunningEventResponse {

@@ -24,7 +24,7 @@ const LotteryEventPage = () => {
 
   const { data: eventsData, isLoading, isError, refetch } = useEvents();
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
-  const events = eventsData?.data || [];
+  const events = eventsData?.data?.data || [];
 
   const filteredEvents = useMemo(() => {
     if (activeTab === "All") return events;
@@ -257,10 +257,6 @@ const EventCard = ({
               </Link>
               <StatusBadge status={status} />
             </div>
-            <div className="flex items-center gap-1.5 text-gray-500 text-sm">
-              <LocationIcon />
-              <span>{event.region?.name || "Unknown Location"}</span>
-            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -407,16 +403,5 @@ const PlusIcon = () => (
   </svg>
 );
 
-const LocationIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className="text-[#FF4D12]"
-  >
-    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-  </svg>
-);
 
 export default LotteryEventPage;
