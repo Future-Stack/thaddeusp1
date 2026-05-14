@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 
 import QueryProvider from "@/providers/QueryProvider";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 import { Toaster } from 'sonner';
 
 export default function RootLayout({
@@ -33,11 +34,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Toaster position="bottom-right" richColors />
-        <QueryProvider>
-          <PizzaCursor />
-          {children}
-        </QueryProvider>
-        <script src="https://accounts.google.com/gsi/client" async></script>
+        <NextAuthProvider>
+          <QueryProvider>
+            <PizzaCursor />
+            {children}
+          </QueryProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

@@ -18,9 +18,14 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+import { useSession, signIn } from "next-auth/react";
+
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const { data: session } = useSession();
+
     const { mutate: login, isPending } = useLogin();
+    const { mutate: googleLogin, isPending: isGooglePending } = useGoogleLogin();
 
     const {
         register,
@@ -34,49 +39,22 @@ const LoginPage = () => {
         },
     });
 
-    const { mutate: googleLogin, isPending: isGooglePending } = useGoogleLogin();
-
     const onSubmit = (data: LoginFormValues) => {
         login(data);
     };
 
     useEffect(() => {
-        /* global google */
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-        if (!clientId) {
-            console.warn("Google Client ID is missing or not configured in .env.local");
-            return;
-        }
-
-        if (typeof window !== 'undefined' && (window as any).google) {
-            (window as any).google.accounts.id.initialize({
-                client_id: clientId,
-                callback: handleGoogleResponse,
-            });
-        }
-    }, []);
-
-    function handleGoogleResponse(response: any) {
-        try {
-            const decoded: any = jwtDecode(response.credential);
+        if (session?.user) {
             googleLogin({
-                email: decoded.email,
-                name: decoded.name,
-                profileImg: decoded.picture
+                email: session.user.email || '',
+                name: session.user.name || '',
+                profileImg: session.user.image || '',
             });
-        } catch (error) {
-            console.error("Error decoding Google token:", error);
-            toast.error("Failed to process Google login");
         }
-    }
+    }, [session, googleLogin]);
 
     const handleGoogleLogin = () => {
-        if ((window as any).google) {
-            (window as any).google.accounts.id.prompt();
-        } else {
-            toast.error("Google login is currently unavailable. Please refresh the page.");
-        }
+        signIn('google');
     };
 
     return (
