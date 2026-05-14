@@ -263,7 +263,7 @@ export default function UserDashboard() {
                         className="space-y-4"
                       >
                         {[1, 2, 3].map((i) => (
-                          <Skeleton key={i} className="h-[58px] w-full rounded-2xl" />
+                          <Skeleton key={i} className="h-14.5 w-full rounded-2xl" />
                         ))}
                       </motion.div>
                     ) : tickets.length > 0 ? (

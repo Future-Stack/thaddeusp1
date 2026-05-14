@@ -13,7 +13,7 @@ const RevenuePage = () => {
                         <p className="text-gray-500 mt-1 font-medium">Financial overview by region and week</p>
                     </div>
                     
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                    {/* <div className="flex items-center gap-4 w-full sm:w-auto">
                         <div className="relative min-w-40">
                             <select className="appearance-none w-full bg-white border border-gray-100 rounded-full px-6 py-3 pr-12 text-sm font-semibold text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/10 shadow-sm cursor-pointer transition-all">
                                 <option>last week</option>
@@ -27,7 +27,7 @@ const RevenuePage = () => {
                             <Download size={18} />
                             Export CSV
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </AnimationWrapper>
 

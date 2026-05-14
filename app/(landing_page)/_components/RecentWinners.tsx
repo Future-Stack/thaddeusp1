@@ -18,7 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 
 const WinnerSkeleton = () => (
-    <div className="bg-[#FFFEFB] py-25 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
+    <div className="bg-[#FFFEFB] py-25 rounded-4xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
         <div className="w-full md:w-1/4 text-center md:text-left">
             <Skeleton className="h-8 w-3/4 mb-2 mx-auto md:mx-0" />
             <Skeleton className="h-4 w-1/3 mx-auto md:mx-0" />
@@ -70,7 +70,7 @@ const RecentWinners = () => {
                 <div className="text-center mb-16">
                     <AnimationWrapper animationType="fadeUp">
                         <h2 className="text-4xl md:text-[42px] font-black text-[#1A202C] mb-6 tracking-tight flex items-center justify-center gap-3">
-                            Recent Winners <span className="text-4xl">🥳</span>
+                            Testimonials <span className="text-4xl">🥳</span>
                         </h2>
                     </AnimationWrapper>
 
@@ -106,15 +106,12 @@ const RecentWinners = () => {
                             >
                                 {reviews.map((winner: any) => (
                                     <SwiperSlide key={winner.id}>
-                                        <div className="bg-[#FFFEFB] py-25 rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
+                                        <div className="bg-[#FFFEFB] py-25 rounded-4xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] px-8 flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:gap-16 relative overflow-hidden">
                                             {/* Left Side: Winner Info */}
                                             <div className="w-full md:w-1/4 text-center md:text-left">
                                                 <h3 className="text-2xl lg:text-3xl font-black text-[#0D3B54CC] mb-2">
                                                     {winner.user.fullName}
-                                                </h3>
-                                                <p className="text-[#718096] text-lg font-semibold mb-1">
-                                                    Verified Winner
-                                                </p>
+                                                </h3> 
                                                 <p className="text-gray-400 text-sm">
                                                     ( {format(new Date(winner.createdAt), 'MMMM d, yyyy')} )
                                                 </p>

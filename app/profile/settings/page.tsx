@@ -105,29 +105,7 @@ export default function UserSettings() {
           </SettingSection>
         </AnimationWrapper>
 
-        {/* SMS Notifications */}
-        <AnimationWrapper animationType="fadeUp" delay={0.2}>
-          <SettingSection title="SMS Notifications">
-            <SettingItem 
-              title="Draw Reminder" 
-              description="Text reminder before each draw" 
-              enabled={settings.drawReminderSMS} 
-              setEnabled={updateSetting('drawReminderSMS')}
-            />
-            <SettingItem 
-              title="Winner Notification" 
-              description="Instant SMS if you win" 
-              enabled={settings.winnerNotificationSMS} 
-              setEnabled={updateSetting('winnerNotificationSMS')}
-            />
-            <SettingItem 
-              title="Voucher Expiry Alert" 
-              description="Reminder when voucher is about to expire" 
-              enabled={settings.voucherExpirySMS} 
-              setEnabled={updateSetting('voucherExpirySMS')}
-            />
-          </SettingSection>
-        </AnimationWrapper>
+ 
 
         {/* Privacy */}
         <AnimationWrapper animationType="fadeUp" delay={0.3}>
@@ -138,18 +116,7 @@ export default function UserSettings() {
               enabled={settings.showOnWinnersList} 
               setEnabled={updateSetting('showOnWinnersList')}
             />
-            <SettingItem 
-              title="Share Stats" 
-              description="Allow anonymized statistics to be used" 
-              enabled={settings.shareStats} 
-              setEnabled={updateSetting('shareStats')}
-            />
-            <SettingItem 
-              title="Public Profile" 
-              description="Allow others to see your profile" 
-              enabled={settings.publicProfile} 
-              setEnabled={updateSetting('publicProfile')}
-            />
+         
           </SettingSection>
         </AnimationWrapper>
 

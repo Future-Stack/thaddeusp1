@@ -19,4 +19,14 @@ export const userService = {
     const response = await apiClient.get('/user/admin/stats');
     return response.data;
   },
+
+  getMeStats: async () => {
+    const response = await apiClient.get('/user/me/stats');
+    return response.data;
+  },
+
+  updateUserStatus: async (id: string, status: 'active' | 'suspended') => {
+    const response = await apiClient.patch(`/user/admin/${id}/status`, { status });
+    return response.data;
+  },
 };

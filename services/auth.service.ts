@@ -4,7 +4,7 @@ export interface SignUpPayload {
   fullName: string;
   email: string;
   password?: string;
-  regionId: string;
+  regionId?: string;
 }
 
 export interface SignUpResponse {

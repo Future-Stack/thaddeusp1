@@ -2,8 +2,6 @@
 
 import React, { useEffect } from "react";
 import Modal from "@/components/Modal";
-import { useRegions } from "@/hooks/useRegions";
-import { Region } from "@/services/region.service";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,7 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 interface EventFormValues {
   name: string;
   description: string;
-  regionId: string;
+  status: "UPCOMING" | "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
   drawDate: Date;
   ticketOpen: Date;
   ticketClose: Date;
@@ -29,7 +27,7 @@ interface EventFormValues {
 const eventSchema = z.object({
   name: z.string().min(3, "Event name must be at least 3 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
-  regionId: z.string().min(1, "Please select a region"),
+  status: z.enum(["UPCOMING", "ONGOING", "CLOSED", "COMPLETED", "CANCELLED"]),
   drawDate: z.date({ message: "Draw date is required" }),
   ticketOpen: z.date({ message: "Ticket open date is required" }),
   ticketClose: z.date({ message: "Ticket close date is required" }),
@@ -47,9 +45,6 @@ interface EditEventModalProps {
 }
 
 const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave, event }) => {
-  const { data: regionsData, isLoading: regionsLoading } = useRegions();
-  const regions = regionsData || [];
-
   const { mutate: updateEvent, isPending } = useUpdateEvent();
 
   const {
@@ -68,7 +63,7 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave
       reset({
         name: event.name,
         description: event.description,
-        regionId: event.regionId,
+        status: event.status,
         drawDate: new Date(event.drawDate),
         ticketOpen: new Date(event.ticketOpen),
         ticketClose: new Date(event.ticketClose),
@@ -134,30 +129,27 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
 
-          {/* Region / City */}
+          {/* Event Status */}
           <div>
             <label className="block text-sm font-bold text-[#111827] mb-2">
-              Region / City <span className="text-red-500">*</span>
+              Event Status <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <select
-                {...register("regionId")}
-                className={`w-full px-4 py-3 rounded-xl border ${errors.regionId ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
+                {...register("status")}
+                className={`w-full px-4 py-3 rounded-xl border ${errors.status ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
               >
-                <option value="" disabled>
-                  {regionsLoading ? "Loading regions..." : "Select a region"}
-                </option>
-                {regions.map((region: Region) => (
-                  <option key={region.id} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
+                <option value="UPCOMING">UPCOMING</option>
+                <option value="ONGOING">ONGOING</option>
+                <option value="CLOSED">CLOSED</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
               </select>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                 <ChevronDownIcon />
               </div>
             </div>
-            {errors.regionId && <p className="text-red-500 text-xs mt-1">{errors.regionId.message}</p>}
+            {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status.message}</p>}
           </div>
 
           {/* Draw Date */}

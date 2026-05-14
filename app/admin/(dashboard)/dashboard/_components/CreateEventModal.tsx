@@ -2,8 +2,6 @@
 
 import React from "react";
 import Modal from "@/components/Modal";
-import { useRegions } from "@/hooks/useRegions";
-import { Region } from "@/services/region.service";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,7 +14,6 @@ import "react-datepicker/dist/react-datepicker.css";
 interface EventFormValues {
   name: string;
   description: string;
-  regionId: string;
   drawDate: Date;
   ticketOpen: Date;
   ticketClose: Date;
@@ -29,7 +26,6 @@ interface EventFormValues {
 const eventSchema = z.object({
   name: z.string().min(3, "Event name must be at least 3 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
-  regionId: z.string().min(1, "Please select a region"),
   drawDate: z.date({ message: "Draw date is required" }),
   ticketOpen: z.date({ message: "Ticket open date is required" }),
   ticketClose: z.date({ message: "Ticket close date is required" }),
@@ -46,9 +42,6 @@ interface CreateEventModalProps {
 }
 
 const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, onSave }) => {
-  const { data: regionsData, isLoading: regionsLoading } = useRegions();
-  const regions = regionsData || [];
-
   const { mutate: createEvent, isPending } = useCreateEvent();
 
   const {
@@ -62,7 +55,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     defaultValues: {
       name: "",
       description: "",
-      regionId: "",
       isAutoDraw: false,
       ticketPrice: 10,
       prizeValue: 1000,
@@ -74,6 +66,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     // Convert dates to ISO format
     const payload: CreateEventDto = {
       ...data,
+    
       drawDate: new Date(data.drawDate).toISOString(),
       ticketOpen: new Date(data.ticketOpen).toISOString(),
       ticketClose: new Date(data.ticketClose).toISOString(),
@@ -116,33 +109,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
               className={`w-full px-4 py-3 rounded-xl border ${errors.name ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm placeholder:text-gray-400`}
             />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-          </div>
-
-          {/* Region / City */}
-          <div>
-            <label className="block text-sm font-bold text-[#111827] mb-2">
-              Region / City <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <select
-                {...register("regionId")}
-                defaultValue=""
-                className={`w-full px-4 py-3 rounded-xl border ${errors.regionId ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
-              >
-                <option value="" disabled>
-                  {regionsLoading ? "Loading regions..." : "Select a region"}
-                </option>
-                {regions.map((region: Region) => (
-                  <option key={region.id} value={region.id}>
-                    {region.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                <ChevronDownIcon />
-              </div>
-            </div>
-            {errors.regionId && <p className="text-red-500 text-xs mt-1">{errors.regionId.message}</p>}
           </div>
 
           {/* Draw Date */}
@@ -322,12 +288,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
     </Modal>
   );
 };
-
-const ChevronDownIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);
 
 const CalendarIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

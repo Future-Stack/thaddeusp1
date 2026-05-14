@@ -5,8 +5,6 @@ import Image from 'next/image'
 import { SquarePen, Mail, Phone, MapPin, User, Calendar, Loader2, Camera, Map } from 'lucide-react'
 import { useGetMe } from '@/hooks/useAuth'
 import { useUpdateProfile } from '@/hooks/useUser'
-import { useRegions } from '@/hooks/useRegions'
-import { Region } from '@/services/region.service'
 
 interface UserInfo {
     fullName: string
@@ -17,7 +15,6 @@ interface UserInfo {
     state: string
     zip: string
     profileImg: string
-    regionId: string
 }
 
 const PersonalInfoCard = () => {
@@ -25,11 +22,9 @@ const PersonalInfoCard = () => {
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { data: profileData, isLoading, isError, refetch } = useGetMe()
-    const { data: regionsData } = useRegions()
     const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile()
 
     const user = profileData?.user
-    const regions = regionsData || []
 
     const [formData, setFormData] = useState<UserInfo>({
         fullName: '',
@@ -40,7 +35,6 @@ const PersonalInfoCard = () => {
         state: '',
         zip: '',
         profileImg: '',
-        regionId: '',
     })
 
     const [previewUrl, setPreviewUrl] = useState<string>('')
@@ -57,7 +51,6 @@ const PersonalInfoCard = () => {
                 state: user.state || '',
                 zip: user.zip?.toString() || '',
                 profileImg: user.profileImg || '',
-                regionId: user.regionId || '',
             })
             setPreviewUrl(user.profileImg || '')
         }
@@ -75,7 +68,6 @@ const PersonalInfoCard = () => {
         data.append('city', formData.city)
         data.append('state', formData.state)
         data.append('zip', formData.zip || '')
-        data.append('regionId', formData.regionId)
 
         // We don't need to append profileImg here if it's already updated via instant upload,
         // but it doesn't hurt if the backend handles it.
@@ -98,7 +90,6 @@ const PersonalInfoCard = () => {
                 state: user.state || '',
                 zip: user.zip?.toString() || '',
                 profileImg: user.profileImg || '',
-                regionId: user.regionId || '',
             })
             setPreviewUrl(user.profileImg || '')
         }
@@ -156,7 +147,6 @@ const PersonalInfoCard = () => {
         ? `${user.streetAddress}, ${user.city || ''}, ${user.state || ''} ${user.zip || ''}`
         : 'Address not provided'
 
-    const userRegion = regions.find(r => r.id === user?.regionId)?.name || 'Not selected'
 
     const memberSince = user?.createdAt
         ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -215,7 +205,6 @@ const PersonalInfoCard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-4">
                     <InfoBox label="Full Name" value={user?.fullName} icon={<User className="w-4 h-4" />} />
-                    <InfoBox label="Region / City" value={userRegion} icon={<Map className="w-4 h-4" />} />
                     <InfoBox label="Phone Number" value={user?.phone || 'Not provided'} icon={<Phone className="w-4 h-4" />} />
                     <InfoBox label="Email Address" value={user?.email} icon={<Mail className="w-4 h-4" />} isFullWidthOnMobile />
                     <div className="col-span-1 md:col-span-2">
@@ -297,24 +286,6 @@ const PersonalInfoCard = () => {
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input label="Full Name" value={formData.fullName} onChange={(val) => handleChange('fullName', val)} />
-                                <div>
-                                    <label className="block text-sm font-semibold text-[#1F2937] mb-1.5 ml-1">Region / City</label>
-                                    <div className="relative">
-                                        <select
-                                            value={formData.regionId}
-                                            onChange={(e) => handleChange('regionId', e.target.value)}
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-[#1F2937] text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition bg-white appearance-none"
-                                        >
-                                            <option value="" disabled>Select region</option>
-                                            {regions.map((region: Region) => (
-                                                <option key={region.id} value={region.id}>{region.name}</option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input label="Email" value={formData.email} onChange={(val) => handleChange('email', val)} disabled />
