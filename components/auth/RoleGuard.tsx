@@ -19,15 +19,21 @@ export default function RoleGuard({ children, allowedRole }: RoleGuardProps) {
     // If store is still hydrating/loading from localstorage, wait
     if (isLoading) return;
 
+    // Avoid loops if already on login/auth pages
+    if (pathname.includes('/login') || pathname.includes('/forgot-password') || pathname.includes('/verify-otp')) {
+      setIsAuthorized(true);
+      return;
+    }
+
     if (!accessToken) {
       // Not logged in
-      router.push(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
+      router.replace(`/login?callbackUrl=${encodeURIComponent(pathname)}`);
       return;
     }
 
     if (allowedRole && role !== allowedRole) {
       // Logged in but not the right role
-      router.push('/'); // Or a 403 page
+      router.replace('/'); // Or a 403 page
       return;
     }
 

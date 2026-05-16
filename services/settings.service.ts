@@ -21,6 +21,19 @@ export interface AdminSettings {
   updatedAt: string;
 }
 
+export interface UserSettings {
+  id: string;
+  userId: string;
+  drawReminder: boolean;
+  winnerAnnouncement: boolean;
+  marketingEmails: boolean;
+  weeklyDigest: boolean;
+  voucherExpiryAlert: boolean;
+  showOnWinnersList: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export const settingsService = {
   getAdminSettings: async () => {
     const response = await apiClient.get('/settings/admin');
@@ -29,6 +42,16 @@ export const settingsService = {
 
   updateAdminSettings: async (data: Partial<AdminSettings>) => {
     const response = await apiClient.patch('/settings/admin', data);
+    return response.data;
+  },
+
+  getUserSettings: async () => {
+    const response = await apiClient.get('/settings/user');
+    return response.data;
+  },
+
+  updateUserSettings: async (data: Partial<UserSettings>) => {
+    const response = await apiClient.patch('/settings/user', data);
     return response.data;
   },
 };

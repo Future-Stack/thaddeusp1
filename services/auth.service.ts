@@ -104,6 +104,11 @@ export interface GoogleLoginPayload {
   profileImg: string;
 }
 
+export interface ChangePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export const authService = {
   login: async (payload: LoginPayload): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', payload);
@@ -127,6 +132,21 @@ export const authService = {
 
   signUp: async (payload: SignUpPayload): Promise<SignUpResponse> => {
     const response = await apiClient.post('/auth/sign-up', payload);
+    return response.data;
+  },
+
+  changePassword: async (payload: ChangePasswordPayload) => {
+    const response = await apiClient.post('/auth/change-password', payload);
+    return response.data;
+  },
+
+  forgotPassword: async (payload: { email: string }) => {
+    const response = await apiClient.post('/auth/forgot-password', payload);
+    return response.data;
+  },
+
+  resetPassword: async (payload: { email: string; otp: string; newPassword: string }) => {
+    const response = await apiClient.post('/auth/reset-password', payload);
     return response.data;
   },
 };
