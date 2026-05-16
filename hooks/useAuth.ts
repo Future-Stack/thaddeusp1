@@ -4,6 +4,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { jwtDecode } from 'jwt-decode';
+import { signOut } from 'next-auth/react';
 
 export const useSignUp = () => {
   const router = useRouter();
@@ -197,10 +198,15 @@ export const useLogout = () => {
   const router = useRouter();
   const logout = useAppStore((state) => state.logout);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // 1. Clear store and intent flags
     logout();
+    sessionStorage.clear();
+
+    // 2. Clear NextAuth session (clears cookies) and redirect
+    await signOut({ callbackUrl: '/login' });
+
     toast.success('Logged out successfully');
-    router.push('/');
   };
 
   return { logout: handleLogout };

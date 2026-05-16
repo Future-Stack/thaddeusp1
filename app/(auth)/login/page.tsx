@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { useLogin, useGoogleLogin } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useAppStore } from '@/store/useAppStore';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -22,7 +24,10 @@ import { useSession, signIn } from "next-auth/react";
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const { data: session } = useSession();
+    const [isGoogleLoginInitiated, setIsGoogleLoginInitiated] = useState(false);
+    const router = useRouter();
+    const { data: session, status } = useSession();
+    const accessToken = useAppStore((state) => state.accessToken);
 
     const { mutate: login, isPending } = useLogin();
     const { mutate: googleLogin, isPending: isGooglePending } = useGoogleLogin();
@@ -44,21 +49,49 @@ const LoginPage = () => {
     };
 
     useEffect(() => {
-        if (session?.user) {
+        // 1. If user is already fully authenticated (NextAuth + Backend), redirect to home
+        if (status === "authenticated" && session?.user && accessToken) {
+            router.push('/');
+            return;
+        }
+
+        // 2. Only trigger backend sync if:
+        // - NextAuth status is strictly "authenticated"
+        // - We have a "login_intent" flag in sessionStorage (prevents random auto-login)
+        // - We don't have a backend accessToken
+        const loginIntent = sessionStorage.getItem('google_login_intent');
+
+        if (status === "authenticated" && session?.user && loginIntent && !accessToken) {
+            sessionStorage.removeItem('google_login_intent'); // Clear intent immediately
+            setIsGoogleLoginInitiated(true);
             googleLogin({
                 email: session.user.email || '',
                 name: session.user.name || '',
                 profileImg: session.user.image || '',
             });
         }
-    }, [session, googleLogin]);
+    }, [status, session, googleLogin, accessToken, router]);
 
     const handleGoogleLogin = () => {
+        sessionStorage.setItem('google_login_intent', 'true');
         signIn('google');
     };
 
     return (
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
+            {/* Loading Overlay for Google Login Synchronization */}
+            {(isGooglePending || (status === 'loading' && session)) && (
+                <div className="absolute inset-0 z-[100] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+                    <div className="relative">
+                        <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
+                        <div className="absolute inset-0 blur-xl bg-orange-500/20 animate-pulse"></div>
+                    </div>
+                    <p className="text-gray-800 font-bold text-lg animate-pulse">
+                        Authenticating with Google...
+                    </p>
+                    <p className="text-gray-500 text-sm">Please wait while we sync your account.</p>
+                </div>
+            )}
             {/* Scattered Decorative Dots */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
                 {/* Decorative dots with glow effects */}
