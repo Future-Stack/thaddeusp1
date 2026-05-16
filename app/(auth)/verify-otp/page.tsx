@@ -22,7 +22,7 @@ const resetPasswordSchema = z.object({
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 const VerifyOTPContent = () => {
-    const router = useRouter();
+ 
     const searchParams = useSearchParams();
     const email = searchParams.get('email') || '';
     
@@ -45,20 +45,20 @@ const VerifyOTPContent = () => {
         });
     };
 
-    // if (!email) {
-    //     return (
-    //         <div className="text-center p-8 bg-white rounded-3xl shadow-lg border border-red-50">
-    //             <p className="text-red-500 font-bold mb-4">Invalid request. No email provided.</p>
-    //             <Link href="/forgot-password" size="sm" className="text-primary hover:underline font-bold">
-    //                 Go back to Forgot Password
-    //             </Link>
-    //         </div>
-    //     );
-    // }
+    if (!email) {
+        return (
+            <div className="text-center p-8 bg-white rounded-3xl shadow-lg border border-red-50">
+                <p className="text-red-500 font-bold mb-4">Invalid request. No email provided.</p>
+                <Link href="/forgot-password"   className="text-primary hover:underline font-bold">
+                    Go back to Forgot Password
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <AnimationWrapper animationType="fadeUp" className="w-full max-w-md relative z-10">
-            <div className="bg-white p-10 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/20 backdrop-blur-xl">
+            <div className="bg-white p-10 rounded-4xl shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-white/20 backdrop-blur-xl">
                 {/* Header */}
                 <div className="mb-10 text-center">
                     <div className="inline-flex p-4 bg-orange-50 rounded-3xl mb-6">
@@ -170,7 +170,7 @@ const VerifyOTPPage = () => {
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
 
             <Suspense fallback={
-                <div className="bg-white p-10 rounded-[40px] shadow-lg flex flex-col items-center gap-4">
+                <div className="bg-white p-10 rounded-4xl shadow-lg flex flex-col items-center gap-4">
                     <Loader2 className="h-10 w-10 animate-spin text-primary" />
                     <p className="text-gray-500 font-bold">Loading...</p>
                 </div>
