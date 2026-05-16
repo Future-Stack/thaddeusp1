@@ -39,7 +39,7 @@ function Navbar() {
             {!accessToken ? (
               <Link
                 href="/login"
-                className="px-6 py-3 bg-[#FF5722] text-white font-bold rounded-full shadow-md hover:bg-[#F4511E] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 font-inter hidden sm:block"
+                className="px-6 py-3 bg-[#FF5722] text-white font-bold rounded-full shadow-md hover:bg-[#F4511E] hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 font-inter "
               >
                 Login
               </Link>
