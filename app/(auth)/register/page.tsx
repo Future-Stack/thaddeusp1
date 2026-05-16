@@ -90,7 +90,7 @@ const RegisterPage = () => {
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
             {/* Loading Overlay for Google Login Synchronization */}
             {(isGooglePending || (status === 'loading' && session)) && (
-                <div className="absolute inset-0 z-[100] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+                <div className="absolute inset-0 z-100 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
                     <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
                         <div className="absolute inset-0 blur-xl bg-orange-500/20 animate-pulse"></div>
@@ -128,9 +128,10 @@ const RegisterPage = () => {
 
                     {/* Header */}
                     <div className="text-center mb-10">
+                        <Link href="/">
                         <h1 className="text-[32px] md:text-[38px] font-black text-primary mb-8 tracking-tight">
                             Welcome to Win a Pizza!
-                        </h1>
+                        </h1></Link>
 
                         {/* Tabs Toggle */}
                         <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between w-full mx-auto mb-10">

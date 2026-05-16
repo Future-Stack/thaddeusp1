@@ -45,7 +45,13 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "app-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => 
+        typeof window !== 'undefined' ? localStorage : {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        } as any
+      ),
       onRehydrateStorage: () => (state) => {
         state?.setIsLoading(false);
       },

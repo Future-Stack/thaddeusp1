@@ -81,7 +81,7 @@ const LoginPage = () => {
         <div className="min-h-screen bg-[#FFFBF0] flex items-center justify-center p-4 relative overflow-hidden font-inter">
             {/* Loading Overlay for Google Login Synchronization */}
             {(isGooglePending || (status === 'loading' && session)) && (
-                <div className="absolute inset-0 z-[100] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
+                <div className="absolute inset-0 z-100 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
                     <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
                         <div className="absolute inset-0 blur-xl bg-orange-500/20 animate-pulse"></div>
@@ -104,14 +104,14 @@ const LoginPage = () => {
             </div>
 
             {/* Main Content */}
-            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-120 relative z-10">
+            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-165 relative z-10">
                 <div className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] p-8 md:p-12 border border-orange-50">
 
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-6 tracking-tight">
+                        <Link href="/"><h1 className="text-3xl md:text-4xl font-black text-[#EA7307] mb-6 tracking-tight">
                             Welcome to Win a Pizza!
-                        </h1>
+                        </h1></Link>
 
                         {/* Tabs Toggle */}
                         <div className="bg-[#F1F3F6] p-1.5 rounded-full flex items-center justify-between w-full mx-auto mb-8">

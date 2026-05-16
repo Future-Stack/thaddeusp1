@@ -163,7 +163,7 @@ export default function UserDashboard() {
           <div className="lg:col-span-9 space-y-6">
 
             {/* Success Banner */}
-            <AnimationWrapper animationType="fadeUp" delay={0.1} className=" ">
+            {/* <AnimationWrapper animationType="fadeUp" delay={0.1} className=" ">
               <div className="bg-[#D1FAE5] border border-[#A7F3D0] rounded-xl md:rounded-4xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_10px_40px_-15px_rgba(16,185,129,0.2)]">
                 <div className="flex items-center gap-6">
                   <div className="flex items-center justify-center text-4xl shadow-xl shadow-green-900/5 rotate-3">
@@ -183,7 +183,7 @@ export default function UserDashboard() {
                   </svg>
                 </Link>
               </div>
-            </AnimationWrapper>
+            </AnimationWrapper> */}
 
             {/* Active Tickets */}
             <AnimationWrapper animationType="fadeUp" delay={0.2} className="bg-white rounded-xl md:rounded-4xl p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-primary/30 flex flex-col hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] transition-shadow duration-500">
@@ -316,14 +316,16 @@ export default function UserDashboard() {
                 </AnimatePresence>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setIsBuyModalOpen(true)}
-                className="w-full bg-[#F54900] text-white font-black py-5 rounded-2xl mt-6 shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all uppercase tracking-widest text-sm"
-              >
-                Buy More Tickets
-              </motion.button>
+              {runningEvent && (
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsBuyModalOpen(true)}
+                  className="w-full bg-[#F54900] text-white font-black py-5 rounded-2xl mt-6 shadow-lg shadow-orange-100 hover:shadow-orange-200 transition-all uppercase tracking-widest text-sm"
+                >
+                  Buy More Tickets
+                </motion.button>
+              )}
             </AnimationWrapper>
 
             {/* Past Draws */}
@@ -334,7 +336,7 @@ export default function UserDashboard() {
                   <h3 className="text-2xl font-bold text-gray-900">Past Draws</h3>
                 </div>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                 {isDrawsLoading ? (
                   [1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-24 w-full rounded-3xl" />
@@ -376,7 +378,7 @@ export default function UserDashboard() {
           {/* Right Side - Winner Card */}
           <div className="lg:col-span-3 ">
             <AnimationWrapper animationType="fadeLeft" delay={0.5} className="mb-6">
-              <button 
+              <button
                 onClick={() => setIsReviewModalOpen(true)}
                 className="bg-white text-[#059669] font-bold px-8 py-4 rounded-2xl shadow-md flex items-center gap-3 hover:shadow-xl transition-all"
               >
@@ -451,7 +453,7 @@ export default function UserDashboard() {
         event={modalEvent}
       />
       {/* Add Review Modal */}
-      <AddReviewModal 
+      <AddReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
       />

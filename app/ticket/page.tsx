@@ -9,10 +9,11 @@ import { useBuyTickets } from '@/hooks/usePurchase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import RoleGuard from '@/components/auth/RoleGuard';
 
-const TicketPage = () => {
+const TicketContent = () => {
     const [ticketCount, setTicketCount] = useState(1);
-    
+
     const { data: runningEventResponse, isLoading: isEventLoading, isError } = useRunningEvent();
     const { data: statsResponse } = useRevenueStats();
     const { mutate: buyTickets, isPending: isPurchasing } = useBuyTickets();
@@ -92,7 +93,7 @@ const TicketPage = () => {
                         <h1 className="text-[32px] md:text-[38px] font-black text-[#111111] mb-2 tracking-tight">
                             Buy Your Tickets
                         </h1>
-                      
+
                         {stats && stats.totalPrizeCost > 0 && (
                             <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 bg-green-50 rounded-full border border-green-100">
                                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -116,7 +117,7 @@ const TicketPage = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                             </div>
                             <span>
-                                {new Date(event.ticketClose) > new Date() 
+                                {new Date(event.ticketClose) > new Date()
                                     ? `Closes ${new Date(event.ticketClose).toLocaleDateString('en-US', { weekday: 'long' })}`
                                     : "Draw Closed"}
                             </span>
@@ -208,6 +209,14 @@ const TicketPage = () => {
             {/* Bottom Right Decorative Element */}
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/50 rounded-full blur-3xl pointer-events-none" />
         </div>
+    );
+};
+
+const TicketPage = () => {
+    return (
+        <RoleGuard>
+            <TicketContent />
+        </RoleGuard>
     );
 };
 

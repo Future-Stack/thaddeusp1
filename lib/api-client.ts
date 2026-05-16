@@ -56,13 +56,13 @@ apiClient.interceptors.response.use(
           console.error('Refresh token failed:', refreshError);
           logout();
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            window.location.replace('/login');
           }
         }
       } else {
         logout();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.replace('/login');
         }
       }
     }

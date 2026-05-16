@@ -211,3 +211,61 @@ export const useLogout = () => {
 
   return { logout: handleLogout };
 };
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (payload: { oldPassword: string; newPassword: string }) => 
+      authService.changePassword(payload),
+    onSuccess: (response) => {
+      if (response.data.success) {
+        toast.success(response.data.message || 'Password changed successfully');
+      } else {
+        toast.error(response.data.message || 'Failed to change password');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (payload: { email: string }) => authService.forgotPassword(payload),
+    onSuccess: (response) => {
+      if (response.data.success) {
+        toast.success(response.data.message || 'OTP sent successfully to your email');
+      } else {
+        toast.error(response.data.message || 'Failed to send OTP');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: (payload: { email: string; otp: string; newPassword: string }) => 
+      authService.resetPassword(payload),
+    onSuccess: (response) => {
+      if (response.data.success) {
+        toast.success(response.data.message || 'Password reset successful! Please log in.');
+        router.push('/login');
+      } else {
+        toast.error(response.data.message || 'Failed to reset password');
+      }
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    },
+  });
+};
+
+
+
