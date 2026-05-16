@@ -2,10 +2,10 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { eventService, CreateEventDto } from '@/services/event.service';
 import { toast } from 'sonner';
 
-export const useEvents = () => {
+export const useEvents = (params?: { page?: number; limit?: number; status?: string }) => {
   return useQuery({
-    queryKey: ['events'],
-    queryFn: eventService.getAll,
+    queryKey: ['events', params],
+    queryFn: () => eventService.getAll(params),
   });
 };
 
