@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { useLogout } from '@/hooks/useAuth';
+import { useAppStore } from '@/store/useAppStore';
 
 interface SidebarProps {
     isOpen: boolean;
@@ -15,12 +16,14 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     const pathname = usePathname();
+    const { user, role } = useAppStore();
 
     const menuItems = [
         { name: 'Dashboard', icon: <DashboardIcon />, href: '/admin/dashboard' },
         { name: 'Lottery Event', icon: <LotteryIcon />, href: '/admin/lottery-event' },
         { name: 'Users', icon: <UsersIcon />, href: '/admin/users' },
         { name: 'Revenue', icon: <RevenueIcon />, href: '/admin/revenue' },
+        { name: 'Profile', icon: <ProfileIcon />, href: '/admin/profile' },
         { name: 'Settings', icon: <SettingsIcon />, href: '/admin/settings' },
     ];
 
@@ -46,11 +49,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <div className="px-4 mb-6">
                 <div className="bg-[#111827] rounded-xl p-3 flex items-center gap-3">
                     <div className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-700">
-                        <Image src="/user.png" alt="Savannah Nguyen" fill className="object-cover" />
+                        <Image src={user?.profileImg || "/profile.webp"} alt={user?.fullName || "User"} fill className="object-cover" />
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-white text-sm font-semibold">Savannah Nguyen</span>
-                        <span className="text-gray-400 text-xs">Admin</span>
+                    <div className="flex flex-col overflow-hidden">
+                        <span className="text-white text-sm font-semibold truncate">{user?.fullName || 'Admin User'}</span>
+                        <span className="text-gray-400 text-xs capitalize">{role?.toLowerCase() || 'Admin'}</span>
                     </div>
                 </div>
             </div>
@@ -151,6 +154,9 @@ const VendorsIcon = () => (
 );
 const SettingsIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+);
+const ProfileIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 );
 const LogoutIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

@@ -89,8 +89,22 @@ export default function UserDashboard() {
 
   // Fetch all tickets to build the event list
   const { data: allTicketsResponse, isLoading: isAllTicketsLoading } = useMyTickets();
+  const { data: runningEventResponse } = useRunningEvent();
+  const runningEvent = runningEventResponse?.data ?? null;
+
   const allTickets: Ticket[] = allTicketsResponse?.data?.data || [];
-  const events = getUniqueEvents(allTickets);
+  const userEvents = getUniqueEvents(allTickets);
+  
+  // Combine user events with the currently running event
+  const events = [...userEvents];
+  if (runningEvent && !events.some(e => e.id === runningEvent.id)) {
+    events.unshift({
+      id: runningEvent.id,
+      name: runningEvent.name,
+      drawDate: runningEvent.drawDate,
+      status: runningEvent.status,
+    });
+  }
 
   // Auto-select first event once loaded
   useEffect(() => {
@@ -121,11 +135,9 @@ export default function UserDashboard() {
   const winners = winnersResponse?.data?.data || [];
   const lastWinner = winners.find((w: any) => w.isLastWinner);
 
-  const { data: runningEventResponse } = useRunningEvent();
-  const runningEvent = runningEventResponse?.data ?? null;
 
   const selectedEvent = events.find(e => e.id === selectedEventId);
-  const isUpcoming = selectedEvent?.status?.toUpperCase() === 'UPCOMING';
+  const isUpcoming = selectedEvent?.status?.toUpperCase() === 'UPCOMING' || selectedEvent?.status?.toUpperCase() === 'RUNNING' || selectedEvent?.status?.toUpperCase() === 'ONGOING';
   const nextDrawDate = isUpcoming ? (selectedEvent?.drawDate || tickets[0]?.event?.drawDate) : undefined;
 
   // The event to pass to the modal: prefer the selected tab event, fall back to the running event
@@ -316,7 +328,7 @@ export default function UserDashboard() {
                 </AnimatePresence>
               </div>
 
-              {runningEvent && (
+              {isUpcoming && runningEvent && (
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}

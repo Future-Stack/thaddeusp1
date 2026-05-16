@@ -3,161 +3,162 @@
 import React from 'react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import Link from 'next/link';
-import { useRegions } from '@/hooks/useRegions';
-import { Region } from '@/services/region.service';
+import Image from 'next/image';
+import { useEvents } from '@/hooks/useEvents';
+import { useGetWinners } from '@/hooks/useDraws';
+import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Trophy, Calendar, ArrowRight,  MapPin, AlertCircle } from 'lucide-react';
 
-interface RegionCardProps {
-    name: string;
-    users: number;
-    vendors: number;
-    events: number;
-    updatedAt: string;
-    isActive?: boolean;
-    canSelectWinner?: boolean;
-    delay: number;
-}
-
-const RegionCard: React.FC<RegionCardProps> = ({
-    name, users, vendors, events, updatedAt, isActive = true, canSelectWinner = false, delay
+const OverviewCard = ({ title, icon: Icon, children, href }: {
+    title: string,
+    icon: any,
+    children: React.ReactNode,
+    href: string, 
 }) => (
-    <AnimationWrapper animationType="fadeUp" delay={delay} className="h-full">
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm relative group overflow-hidden h-full flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold text-[#111827]">{name}</h3>
-                {isActive && (
-                    <span className="bg-[#E7F9F0] text-[#10B981] text-[10px] font-bold px-3 py-1 rounded-full">
-                        Active
-                    </span>
-                )}
-            </div>
-
-            <div className="flex-1 space-y-3 mb-6">
-                <div className="flex justify-between text-xs font-medium">
-                    <span className="text-gray-400">Users:</span>
-                    <span className="text-[#111827] font-bold">{users}</span>
+    <AnimationWrapper animationType="fadeUp" className="h-full">
+        <div className="bg-white rounded-[20px] p-8 border border-gray-100 shadow-sm flex flex-col h-full hover:shadow-md transition-all duration-300">
+            <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-[#FF5C00]">
+                        <Icon size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#111827]">{title}</h3>
                 </div>
-                <div className="flex justify-between text-xs font-medium">
-                    <span className="text-gray-400">Vendors:</span>
-                    <span className="text-[#111827] font-bold">{vendors}</span>
-                </div>
-                <div className="flex justify-between text-xs font-medium">
-                    <span className="text-gray-400">Events:</span>
-                    <span className="text-[#111827] font-bold">{events}</span>
-                </div>
-            </div>
-
-            <div className="space-y-3">
-                {canSelectWinner && (
-                    <button className="w-full bg-[#111827] text-white py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
-                        <WinnersIcon />
-                        Select Winner Now
-                    </button>
-                )}
-                <Link href="/admin/select-winners" className="w-full block text-center bg-[#F3F4F6] text-[#4B5563] py-2.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors">
-                    View Details
+                <Link
+                    href={href}
+                    className="text-gray-400 hover:text-[#FF5C00] transition-colors p-2 hover:bg-orange-50 rounded-xl"
+                >
+                    <ArrowRight size={20} />
                 </Link>
             </div>
 
-            <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-center">
-                <span className="text-[10px] text-gray-400">Updated at {new Date(updatedAt).toLocaleDateString()}</span>
+            <div className="flex-1 overflow-hidden">
+                {children}
             </div>
+
+         
         </div>
     </AnimationWrapper>
 );
 
-const SkeletonCard = () => (
-    <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm h-full flex flex-col animate-pulse">
-        <div className="flex justify-between items-center mb-6">
-            <div className="h-6 w-32 bg-gray-200 rounded"></div>
-            <div className="h-5 w-16 bg-gray-100 rounded-full"></div>
-        </div>
-        <div className="flex-1 space-y-3 mb-6">
-            {[1, 2, 3].map((i) => (
-                <div key={i} className="flex justify-between">
-                    <div className="h-3 w-20 bg-gray-100 rounded"></div>
-                    <div className="h-3 w-8 bg-gray-200 rounded"></div>
+const ListSkeleton = () => (
+    <div className="space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center gap-4 p-4 border border-gray-50 rounded-2xl">
+                <Skeleton className="w-10 h-10 rounded-full" />
+                <div className="space-y-2 flex-1">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
                 </div>
-            ))}
+            </div>
+        ))}
+    </div>
+);
+
+const ErrorState = ({ message }: { message: string }) => (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
+            <AlertCircle size={24} />
         </div>
-        <div className="space-y-3">
-            <div className="h-10 w-full bg-gray-100 rounded-lg"></div>
-        </div>
-        <div className="mt-auto pt-4 border-t border-gray-50 flex justify-center">
-            <div className="h-3 w-40 bg-gray-50 rounded"></div>
-        </div>
+        <p className="text-gray-600 font-medium">{message}</p>
+    </div>
+);
+
+const EmptyState = ({ message }: { message: string }) => (
+    <div className="flex flex-col items-center justify-center py-12 text-center opacity-60">
+        <p className="text-gray-500 font-medium italic">{message}</p>
     </div>
 );
 
 const RegionOverview = () => {
-    const { data, isLoading, isError, error, refetch } = useRegions();
+    const { data: eventsResponse, isLoading: isEventsLoading, isError: isEventsError } = useEvents();
+    const { data: winnersResponse, isLoading: isWinnersLoading, isError: isWinnersError } = useGetWinners(1, 10);
 
-    if (isLoading) {
-        return (
-            <div>
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold text-[#111827]">Region Overview</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <SkeletonCard key={i} />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    if (isError) {
-        return (
-            <div className="p-8 text-center bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <p className="text-red-500 font-medium mb-4">Error loading regions: {(error as Error).message}</p>
-                <button
-                    onClick={() => refetch()}
-                    className="px-4 py-2 bg-[#111827] text-white rounded-lg text-sm font-bold hover:bg-gray-800 transition-colors"
-                >
-                    Retry
-                </button>
-            </div>
-        );
-    }
-
-    const regions = data || [];
+    const events = eventsResponse?.data?.data || [];
+    const winners = winnersResponse?.data?.data || [];
 
     return (
-        <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-bold text-[#111827]">Region Overview</h2>
-                <div className="relative group">
-                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 transition-colors">
-                        New York
-                        <ChevronDownIcon />
-                    </button>
-                </div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
+            {/* Events Card */}
+            <OverviewCard
+                title="Recent Events"
+                icon={Calendar}
+                href="/admin/lottery-event"
+               
+            >
+                {isEventsLoading ? (
+                    <ListSkeleton />
+                ) : isEventsError ? (
+                    <ErrorState message="Failed to load events" />
+                ) : events.length === 0 ? (
+                    <EmptyState message="No events scheduled yet" />
+                ) : (
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {events.map((event: any) => (
+                            <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 rounded-2xl transition-colors border border-transparent hover:border-gray-100">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-2 h-2 rounded-full ${event.status === 'RUNNING' ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                                    <div>
+                                        <div className="font-bold text-[#111827] text-sm">{event.name}</div>
+                                        <div className="text-xs text-gray-500 mt-0.5">
+                                            Draw Date: {event.drawDate ? format(new Date(event.drawDate), 'MMM d, yyyy') : 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xs font-bold text-gray-900">${event.ticketPrice}</div>
+                                    <div className="text-[10px] text-gray-400">per ticket</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </OverviewCard>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {regions.map((region: Region, index: number) => (
-                    <RegionCard
-                        key={region.id}
-                        name={region.name}
-                        users={region._count.users}
-                        vendors={region._count.vendors}
-                        events={region._count.events}
-                        updatedAt={region.updatedAt}
-                        canSelectWinner={index % 3 === 2} // Mimicking the original logic for demo
-                        delay={0.6 + index * 0.1}
-                    />
-                ))}
-            </div>
+            {/* Winners Card */}
+            <OverviewCard
+                title="Recent Winners"
+                icon={Trophy}
+                href="#"
+             
+            >
+                {isWinnersLoading ? (
+                    <ListSkeleton />
+                ) : isWinnersError ? (
+                    <ErrorState message="Failed to load winners" />
+                ) : winners.length === 0 ? (
+                    <EmptyState message="No winners announced yet" />
+                ) : (
+                    <div className="space-y-4 max-h-100 overflow-y-auto pr-2 custom-scrollbar">
+                        {winners.map((winner: any) => (
+                            <div key={winner.id} className="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 rounded-2xl transition-colors border border-transparent hover:border-gray-100">
+                                <div className="flex items-center gap-4">
+                                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm bg-gray-100">
+                                        <Image
+                                            src={winner.profileImg || "/profile.webp"}
+                                            alt={winner.name}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-[#111827] text-sm">{winner.name}</div>
+                                        <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                                            <MapPin size={10} /> {winner.address || 'Location N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-orange-50 text-[#FF5C00] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                                    WINNER
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </OverviewCard>
         </div>
     );
 };
-
-const WinnersIcon = () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
-);
-
-const ChevronDownIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-);
 
 export default RegionOverview;
