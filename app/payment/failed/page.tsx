@@ -29,8 +29,8 @@ const PaymentFailedPage = () => {
                 </div>
             </div>
 
-            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-[500px] relative z-10">
-                <div className="bg-white rounded-[40px] shadow-[0_30px_70px_-15px_rgba(0,0,0,0.1)] p-10 md:p-12 border border-red-50 flex flex-col items-center text-center">
+            <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-125 relative z-10">
+                <div className="bg-white rounded-4xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.1)] p-10 md:p-12 border border-red-50 flex flex-col items-center text-center">
                     
                     {/* Failed Icon Animation */}
                     <motion.div 
@@ -66,7 +66,7 @@ const PaymentFailedPage = () => {
                     </p>
 
                     {/* Error Reasons */}
-                    <div className="w-full bg-[#FEF2F2] border border-[#FEE2E2] rounded-[24px] p-6 mb-10 text-left">
+                    <div className="w-full bg-[#FEF2F2] border border-[#FEE2E2] rounded-3xl p-6 mb-10 text-left">
                         <h4 className="text-red-900 font-bold text-sm mb-3 uppercase tracking-wider">Common reasons:</h4>
                         <ul className="space-y-2">
                             {['Insufficient funds', 'Incorrect card details', 'Transaction declined by bank'].map((reason, idx) => (

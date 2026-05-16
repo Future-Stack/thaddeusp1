@@ -57,7 +57,8 @@ const AnimationWrapper: React.FC<AnimationWrapperProps> = ({
   return (
     <motion.div
       initial="hidden"
-      animate={isClient ? "visible" : "hidden"}
+      whileInView={isClient ? "visible" : "hidden"}
+      viewport={{ once: viewportOnce, margin: "-100px" }}
       variants={variants[animationType]}
       transition={{
         duration: duration,

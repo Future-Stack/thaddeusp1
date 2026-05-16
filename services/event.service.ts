@@ -106,8 +106,8 @@ export const eventService = {
     return response.data;
   },
   
-  getAll: async (): Promise<EventsResponse> => {
-    const response = await apiClient.get('/events');
+  getAll: async (params?: { page?: number; limit?: number; status?: string }): Promise<EventsResponse> => {
+    const response = await apiClient.get('/events', { params });
     return response.data;
   },
 
