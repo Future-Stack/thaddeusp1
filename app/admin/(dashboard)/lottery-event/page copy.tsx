@@ -21,42 +21,51 @@ const LotteryEventPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [eventToDelete, setEventToDelete] = useState<Event | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 10;
 
-  const { data: eventsData, isLoading, isError, refetch } = useEvents();
+  const { data: eventsData, isLoading, isError, refetch } = useEvents({
+    page: currentPage,
+    limit,
+    status: activeTab === "All" ? undefined : activeTab,
+  });
+  
+  // Fetch all events once to get counts for tabs
+  const { data: allEventsData } = useEvents({ limit: 1000 });
+  
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
   const events = eventsData?.data?.data || [];
+  const allEvents = allEventsData?.data?.data || [];
+  const meta = eventsData?.data?.meta;
 
-  const filteredEvents = useMemo(() => {
-    if (activeTab === "All") return events;
-    return events.filter((event) => event.status === activeTab);
-  }, [events, activeTab]);
+  const filteredEvents = events; // Now handled by backend status param
 
   const tabs = [
-    { id: "All", label: "All Events", count: events.length },
+    { id: "All", label: "All Events", count: allEventsData?.data?.meta?.total || 0 },
     {
       id: "ONGOING",
       label: "Ongoing",
-      count: events.filter((e) => e.status === "ONGOING").length,
+      count: allEvents.filter((e) => e.status === "ONGOING").length,
     },
     {
       id: "UPCOMING",
       label: "Upcoming",
-      count: events.filter((e) => e.status === "UPCOMING").length,
+      count: allEvents.filter((e) => e.status === "UPCOMING").length,
     },
     {
       id: "CLOSED",
       label: "Closed",
-      count: events.filter((e) => e.status === "CLOSED").length,
+      count: allEvents.filter((e) => e.status === "CLOSED").length,
     },
     {
       id: "COMPLETED",
       label: "Completed",
-      count: events.filter((e) => e.status === "COMPLETED").length,
+      count: allEvents.filter((e) => e.status === "COMPLETED").length,
     },
     {
       id: "CANCELLED",
       label: "Cancelled",
-      count: events.filter((e) => e.status === "CANCELLED").length,
+      count: allEvents.filter((e) => e.status === "CANCELLED").length,
     },
   ];
 
@@ -92,7 +101,10 @@ const LotteryEventPage = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                setCurrentPage(1);
+              }}
               className={`pb-4 text-sm font-medium transition-all relative min-w-max ${activeTab === tab.id
                 ? "text-[#FF4D12]"
                 : "text-gray-500 hover:text-gray-700"
@@ -156,6 +168,42 @@ const LotteryEventPage = () => {
           </div>
         )}
       </div>
+
+      {/* Pagination Section */}
+      {meta && meta.totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 py-8">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-sm font-medium"
+          >
+            Previous
+          </button>
+
+          <div className="flex gap-2">
+            {[...Array(meta.totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-colors ${currentPage === i + 1
+                  ? "bg-[#FF4D12] text-white"
+                  : "border border-gray-200 hover:bg-gray-50"
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, meta.totalPages))}
+            disabled={currentPage === meta.totalPages}
+            className="px-4 py-2 rounded-lg border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-sm font-medium"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Create Modal */}
       <CreateEventModal

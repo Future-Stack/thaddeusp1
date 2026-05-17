@@ -24,21 +24,30 @@ const LotteryEventPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
-  const { data: eventsData, isLoading, isError, refetch } = useEvents({
-    page: currentPage,
-    limit,
-    status: activeTab === "All" ? undefined : activeTab,
-  });
-  
-  // Fetch all events once to get counts for tabs
-  const { data: allEventsData } = useEvents({ limit: 1000 });
-  
-  const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
-  const events = eventsData?.data?.data || [];
-  const allEvents = allEventsData?.data?.data || [];
-  const meta = eventsData?.data?.meta;
+  const { data: allEventsData, isLoading, isError, refetch } = useEvents({ limit: 1000 });
 
-  const filteredEvents = events; // Now handled by backend status param
+  const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+  const allEvents = allEventsData?.data?.data || [];
+
+  const statusFilteredEvents = useMemo(() => {
+    if (activeTab === "All") return allEvents;
+    return allEvents.filter((e) => e.status === activeTab);
+  }, [allEvents, activeTab]);
+
+  const filteredEvents = useMemo(() => {
+    const start = (currentPage - 1) * limit;
+    return statusFilteredEvents.slice(start, start + limit);
+  }, [statusFilteredEvents, currentPage, limit]);
+
+  const meta = useMemo(() => {
+    const total = statusFilteredEvents.length;
+    return {
+      total,
+      page: currentPage,
+      limit,
+      totalPages: Math.ceil(total / limit) || 1,
+    };
+  }, [statusFilteredEvents, currentPage, limit]);
 
   const tabs = [
     { id: "All", label: "All Events", count: allEventsData?.data?.meta?.total || 0 },
