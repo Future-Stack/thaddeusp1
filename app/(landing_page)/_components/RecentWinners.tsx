@@ -114,7 +114,7 @@ const RecentWinners = () => {
                   animationType="fadeUp"
                   delay={0.1 * (index + 1)}
                 >
-                  <div className="bg-[#FFFEFB] p-8 md:p-10 rounded-4xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] flex flex-col relative overflow-hidden h-full border border-gray-100/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-shadow duration-300">
+                  <div className="bg-[#FFFEFB] p-8 md:p-10 rounded-4xl  flex flex-col relative overflow-hidden h-full border border-gray-100/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-shadow duration-300">
                     {/* Top Header: Winner Info & Avatar */}
                     <div className="flex items-start gap-5 mb-6">
                       {/* Avatar with Dashed Border */}

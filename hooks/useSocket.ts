@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAppStore } from '@/store/useAppStore';
 
-const SOCKET_URL = 'https://thaddeusp1-backend.onrender.com';
+// const SOCKET_URL = 'https://thaddeusp1-backend.onrender.com';
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
 export const useSocket = () => {
   const socketRef = useRef<Socket | null>(null);

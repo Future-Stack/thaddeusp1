@@ -23,10 +23,10 @@ const VerifyOTP = () => {
       {/* Background Dots */}
       <div className="absolute top-[10%] left-[5%] w-2 h-2 bg-blue-500 rounded-full opacity-20 animate-pulse" />
       <div className="absolute bottom-[15%] right-[8%] w-3 h-3 bg-blue-400 rounded-full opacity-10 animate-pulse" />
-      
+
       <AnimationWrapper animationType="scaleUp" duration={0.8} className="w-full max-w-md relative z-10">
         <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 md:p-10 text-center">
-          
+
           <h1 className="text-[28px] font-bold text-[#0B1221] mb-2">Verify OTP</h1>
           <p className="text-[#64748B] text-sm font-medium mb-6 max-w-[340px] mx-auto leading-relaxed">
             We have sent you a 6 digit OTP code to your provided email: <span className="text-[#0B1221] font-bold">example@mail.com</span> please input that code here to proceed.
@@ -50,7 +50,7 @@ const VerifyOTP = () => {
             </div>
 
             <div className="flex gap-4 pt-2">
-              <Link 
+              <Link
                 href="/admin/forgot-password"
                 className="flex-1 py-4 bg-white text-[#0B1221] border border-[#E2E8F0] font-bold text-[16px] rounded-xl hover:bg-gray-50 transition-all duration-300 text-center"
               >

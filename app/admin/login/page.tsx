@@ -69,9 +69,8 @@ const AdminLogin = () => {
                 {...register("email")}
                 type="email"
                 placeholder="admin@luckyslice.com"
-                className={`w-full px-5 py-4 bg-white border ${
-                  errors.email ? "border-red-500" : "border-[#E2E8F0]"
-                } rounded-xl focus:outline-none focus:border-[#0B1221] focus:ring-1 focus:ring-[#0B1221] transition-all text-[#0B1221] placeholder:text-[#94A3B8] font-medium`}
+                className={`w-full px-5 py-4 bg-white border ${errors.email ? "border-red-500" : "border-[#E2E8F0]"
+                  } rounded-xl focus:outline-none focus:border-[#0B1221] focus:ring-1 focus:ring-[#0B1221] transition-all text-[#0B1221] placeholder:text-[#94A3B8] font-medium`}
               />
               {errors.email && (
                 <p className="text-red-500 text-[12px] mt-1 ml-1 font-medium">{errors.email.message}</p>
@@ -86,9 +85,8 @@ const AdminLogin = () => {
                 {...register("password")}
                 type="password"
                 placeholder="........"
-                className={`w-full px-5 py-4 bg-white border ${
-                  errors.password ? "border-red-500" : "border-[#E2E8F0]"
-                } rounded-xl focus:outline-none focus:border-[#0B1221] focus:ring-1 focus:ring-[#0B1221] transition-all text-[#0B1221] placeholder:text-[#94A3B8] font-medium`}
+                className={`w-full px-5 py-4 bg-white border ${errors.password ? "border-red-500" : "border-[#E2E8F0]"
+                  } rounded-xl focus:outline-none focus:border-[#0B1221] focus:ring-1 focus:ring-[#0B1221] transition-all text-[#0B1221] placeholder:text-[#94A3B8] font-medium`}
               />
               {errors.password && (
                 <p className="text-red-500 text-[12px] mt-1 ml-1 font-medium">{errors.password.message}</p>
@@ -144,7 +142,7 @@ const AdminLogin = () => {
             alt="Delivery Man"
             width={160}
             height={160}
-            className="w-full h-auto drop-shadow-xl animate-bounce-slow"
+            className="w-full h-auto drop-shadow-xl animate-bounce-slow "
           />
         </div>
       </AnimationWrapper>
