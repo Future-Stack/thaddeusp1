@@ -16,11 +16,12 @@ const convertLocalTimeToUTC = (localTime: string | null): string => {
     const minutes = parseInt(parts[1], 10);
     if (isNaN(hours) || isNaN(minutes)) return localTime;
     
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
+    const offsetMinutes = new Date().getTimezoneOffset();
+    const totalLocalMinutes = hours * 60 + minutes;
+    const totalUTCMinutes = (totalLocalMinutes + offsetMinutes + 1440) % 1440;
     
-    const utcHours = String(date.getUTCHours()).padStart(2, '0');
-    const utcMinutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const utcHours = String(Math.floor(totalUTCMinutes / 60)).padStart(2, '0');
+    const utcMinutes = String(totalUTCMinutes % 60).padStart(2, '0');
     return `${utcHours}:${utcMinutes}`;
 };
 
@@ -32,11 +33,12 @@ const convertUTCToLocalTime = (utcTime: string | null): string => {
     const utcMinutes = parseInt(parts[1], 10);
     if (isNaN(utcHours) || isNaN(utcMinutes)) return utcTime;
 
-    const now = new Date();
-    const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), utcHours, utcMinutes, 0, 0));
+    const offsetMinutes = new Date().getTimezoneOffset();
+    const totalUTCMinutes = utcHours * 60 + utcMinutes;
+    const totalLocalMinutes = (totalUTCMinutes - offsetMinutes + 1440) % 1440;
     
-    const localHours = String(date.getHours()).padStart(2, '0');
-    const localMinutes = String(date.getMinutes()).padStart(2, '0');
+    const localHours = String(Math.floor(totalLocalMinutes / 60)).padStart(2, '0');
+    const localMinutes = String(totalLocalMinutes % 60).padStart(2, '0');
     return `${localHours}:${localMinutes}`;
 };
 
@@ -47,6 +49,15 @@ const isValid24HourTime = (time: string): boolean => {
 
 const parseTimeToDate = (timeStr: string | null): Date | null => {
     if (!timeStr) return null;
+    
+    // Support ISO date strings
+    if (timeStr.includes('T')) {
+        const parsedDate = new Date(timeStr);
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate;
+        }
+    }
+    
     const parts = timeStr.split(':');
     if (parts.length < 2) return null;
     const hours = parseInt(parts[0], 10);
@@ -80,6 +91,7 @@ const Toggle = ({ enabled, setEnabled, activeColor = "bg-[#FF5C00]" }: { enabled
 const Settings = () => {
     const { data: settingsData, isLoading } = useGetAdminSettings();
     const { mutate: updateSettings, isPending: isUpdating } = useUpdateAdminSettings();
+    const [isInitialized, setIsInitialized] = useState(false);
 
     // Combined form state
     const [formData, setFormData] = useState({
@@ -109,7 +121,7 @@ const Settings = () => {
     });
 
     useEffect(() => {
-        if (settingsData?.data) {
+        if (settingsData?.data && !isInitialized) {
             const data = settingsData.data;
             setFormData(prev => ({
                 ...prev,
@@ -129,8 +141,9 @@ const Settings = () => {
                 drawReminders: data.drawReminders ?? prev.drawReminders,
                 autoSendVouchers: data.autoSendVouchers ?? prev.autoSendVouchers,
             }));
+            setIsInitialized(true);
         }
-    }, [settingsData]);
+    }, [settingsData, isInitialized]);
 
     const handleSave = () => {
         // Only send fields that are supported by the API
@@ -156,6 +169,10 @@ const Settings = () => {
             adminDrawAlerts, lowParticipationAlert,
             lowParticipationThreshold, marketingEmailsToUsers,
             drawReminders, autoSendVouchers
+        }, {
+            onSuccess: () => {
+                setIsInitialized(false);
+            }
         });
     };
 
