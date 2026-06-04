@@ -45,11 +45,11 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "app-storage",
-      storage: createJSONStorage(() => 
+      storage: createJSONStorage(() =>
         typeof window !== 'undefined' ? localStorage : {
           getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {},
+          setItem: () => { },
+          removeItem: () => { },
         } as any
       ),
       onRehydrateStorage: () => (state) => {
