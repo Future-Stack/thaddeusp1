@@ -84,7 +84,7 @@ export default function RealStories() {
                                     />
                                 </svg>
                                 <Image
-                                    src={"/time/1.svg"}
+                                    src={"/time/1.png"}
                                     alt="story"
                                     fill
                                     className="object-cover"
@@ -152,7 +152,7 @@ export default function RealStories() {
                                     />
                                 </svg>
                                 <Image
-                                    src="/time/2.svg"
+                                    src="/time/2.png"
                                     alt="story"
                                     fill
                                     className="object-cover"
@@ -194,7 +194,7 @@ export default function RealStories() {
                                     />
                                 </svg>
                                 <Image
-                                    src="/time/3.svg"
+                                    src="/time/3.png"
                                     alt="story"
                                     fill
                                     className="object-cover"
@@ -264,7 +264,7 @@ export default function RealStories() {
                                 <div
                                     className="absolute inset-0"
                                     style={{
-                                        clipPath: `url(/time/4.svg)`,
+                                        clipPath: `url(/time/4.png)`,
                                     }}
                                 >
                                     <Image

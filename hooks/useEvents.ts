@@ -9,6 +9,14 @@ export const useEvents = (params?: { page?: number; limit?: number; status?: str
   });
 };
 
+export const useEvent = (id: string) => {
+  return useQuery({
+    queryKey: ['event', id],
+    queryFn: () => eventService.getById(id),
+    enabled: !!id,
+  });
+};
+
 export const useRunningEvent = () => {
   return useQuery({
     queryKey: ['running-event'],

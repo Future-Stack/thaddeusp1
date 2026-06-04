@@ -63,15 +63,16 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ isOpen, onClose, on
   });
 
   const onSubmit = (data: EventFormValues) => {
-    // Convert dates to ISO format
+    // Convert dates to UTC ISO format (Option 1: timezone-offset conversion)
     const payload: CreateEventDto = {
       ...data,
-    
+
       drawDate: new Date(data.drawDate).toISOString(),
       ticketOpen: new Date(data.ticketOpen).toISOString(),
       ticketClose: new Date(data.ticketClose).toISOString(),
     };
 
+    console.log(payload)
     createEvent(payload, {
       onSuccess: () => {
         reset();

@@ -131,6 +131,11 @@ export const eventService = {
     return response.data;
   },
 
+  getById: async (id: string): Promise<{ data: Event }> => {
+    const response = await apiClient.get(`/events/${id}`);
+    return response.data;
+  },
+
   delete: async (id: string) => {
     const response = await apiClient.delete(`/events/${id}`);
     return response.data;
