@@ -4,6 +4,65 @@ import React, { useState, useEffect } from 'react';
 import { Clock, ChevronDown, Loader2 } from 'lucide-react';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { useGetAdminSettings, useUpdateAdminSettings } from '@/hooks/useSettings';
+import { toast } from 'sonner';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+const convertLocalTimeToUTC = (localTime: string | null): string => {
+    if (!localTime) return '';
+    const parts = localTime.split(':');
+    if (parts.length < 2) return localTime;
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    if (isNaN(hours) || isNaN(minutes)) return localTime;
+    
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    
+    const utcHours = String(date.getUTCHours()).padStart(2, '0');
+    const utcMinutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${utcHours}:${utcMinutes}`;
+};
+
+const convertUTCToLocalTime = (utcTime: string | null): string => {
+    if (!utcTime) return '';
+    const parts = utcTime.split(':');
+    if (parts.length < 2) return utcTime;
+    const utcHours = parseInt(parts[0], 10);
+    const utcMinutes = parseInt(parts[1], 10);
+    if (isNaN(utcHours) || isNaN(utcMinutes)) return utcTime;
+
+    const now = new Date();
+    const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), utcHours, utcMinutes, 0, 0));
+    
+    const localHours = String(date.getHours()).padStart(2, '0');
+    const localMinutes = String(date.getMinutes()).padStart(2, '0');
+    return `${localHours}:${localMinutes}`;
+};
+
+const isValid24HourTime = (time: string): boolean => {
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    return regex.test(time);
+};
+
+const parseTimeToDate = (timeStr: string | null): Date | null => {
+    if (!timeStr) return null;
+    const parts = timeStr.split(':');
+    if (parts.length < 2) return null;
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    if (isNaN(hours) || isNaN(minutes)) return null;
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+};
+
+const formatTimeToStr = (date: Date | null): string => {
+    if (!date) return '';
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+};
 
 const Toggle = ({ enabled, setEnabled, activeColor = "bg-[#FF5C00]" }: { enabled: boolean, setEnabled: (val: boolean) => void, activeColor?: string }) => {
     return (
@@ -57,7 +116,7 @@ const Settings = () => {
                 maintenanceMode: data.maintenanceMode ?? prev.maintenanceMode,
                 automatedDraws: data.automatedDraws ?? prev.automatedDraws,
                 drawDay: data.drawDay ?? prev.drawDay,
-                drawTime: data.drawTime ?? prev.drawTime,
+                drawTime: data.drawTime ? convertUTCToLocalTime(data.drawTime) : prev.drawTime,
                 maxTicketPerUser: data.maxTicketPerUser ?? prev.maxTicketPerUser,
                 minTicketForDraw: data.minTicketForDraw ?? prev.minTicketForDraw,
                 emailWinners: data.emailWinners ?? prev.emailWinners,
@@ -84,8 +143,14 @@ const Settings = () => {
             drawReminders, autoSendVouchers
         } = formData;
 
+        if (!isValid24HourTime(drawTime)) {
+            toast.error("Please enter a valid 24-hour time (e.g., 23:00)");
+            return;
+        }
+
         updateSettings({
-            maintenanceMode, automatedDraws, drawDay, drawTime,
+            maintenanceMode, automatedDraws, drawDay,
+            drawTime: convertLocalTimeToUTC(drawTime),
             maxTicketPerUser, minTicketForDraw, emailWinners,
             emailAllParticipants, smsWinnerNotifications,
             adminDrawAlerts, lowParticipationAlert,
@@ -165,15 +230,23 @@ const Settings = () => {
                                 <div className="space-y-3 p-6 border border-gray-100 rounded-[20px] transition-all hover:bg-gray-50/50">
                                     <label className="text-sm font-bold text-[#111827]">Draw Time</label>
                                     <div className="relative">
-                                        <input
-                                            type="text"
-                                            value={formData.drawTime || ''}
-                                            onChange={(e) => handleChange('drawTime', e.target.value)}
-                                            className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500/30 transition-all"
-                                            placeholder="11:59"
+                                        <DatePicker
+                                            selected={parseTimeToDate(formData.drawTime)}
+                                            onChange={(date: Date | null) => handleChange('drawTime', formatTimeToStr(date))}
+                                            showTimeSelect
+                                            showTimeSelectOnly
+                                            timeIntervals={15}
+                                            timeCaption="Time"
+                                            dateFormat="HH:mm"
+                                            timeFormat="HH:mm"
+                                            className="w-full bg-white border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500/30 transition-all cursor-pointer"
+                                            wrapperClassName="w-full"
+                                            popperPlacement="bottom-end"
+                                            portalId="settings-datepicker-portal"
                                         />
-                                        <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" size={18} />
                                     </div>
+                                    <p className="text-[11px] text-gray-400">Use 24-hour format (e.g., 23:00)</p>
                                 </div>
 
                                 {/* Max Tickets Per User */}
@@ -343,4 +416,65 @@ const Settings = () => {
 };
 
 export default Settings;
+
+
+const datePickerStyles = `
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+  .react-datepicker__input-container input {
+    width: 100%;
+  }
+  .react-datepicker-popper {
+    z-index: 9999 !important;
+  }
+  .react-datepicker {
+    font-family: inherit;
+    border-radius: 16px;
+    border: 1px solid #F3F4F6;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    background-color: white;
+    overflow: hidden;
+  }
+  .react-datepicker__header {
+    background-color: white;
+    border-bottom: 1px solid #F3F4F6;
+    padding-top: 15px;
+  }
+  .react-datepicker__time-container {
+    border-left: 1px solid #F3F4F6;
+    width: 120px;
+  }
+  .react-datepicker__time-header {
+    font-weight: 700;
+    color: #111827;
+  }
+  .react-datepicker__time-list-item--selected {
+    background-color: #FF5C00 !important;
+  }
+  .react-datepicker__time-list-item {
+    transition: all 0.2s;
+  }
+  .react-datepicker__time-list-item:hover {
+    background-color: #FFF5EB !important;
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const portalDiv = document.getElementById('settings-datepicker-portal');
+  if (!portalDiv) {
+    const div = document.createElement('div');
+    div.id = 'settings-datepicker-portal';
+    document.body.appendChild(div);
+  }
+
+  const styleId = 'settings-datepicker-custom-styles';
+  let style = document.getElementById(styleId) as HTMLStyleElement;
+  if (!style) {
+    style = document.createElement('style');
+    style.id = styleId;
+    document.head.appendChild(style);
+  }
+  style.innerHTML = datePickerStyles;
+}
 

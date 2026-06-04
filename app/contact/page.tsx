@@ -21,6 +21,7 @@ import Navbar from '@/app/(landing_page)/_components/Navbar';
 import Footer from '@/app/(landing_page)/_components/Footer';
 import AnimationWrapper from '@/components/AnimationWrapper';
 import { toast } from 'sonner';
+import { contactService } from '@/services/contact.service';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -41,12 +42,25 @@ const ContactPage = () => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Simulate API call delay for premium feel
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            const payload = {
+                name: formData.fullName,
+                email: formData.email,
+                subject: formData.subject,
+                message: formData.message,
+            };
 
-        setIsSubmitting(false);
-        setIsSubmitted(true);
-        toast.success('Your message has been sent successfully! We will get back to you soon.');
+            await contactService.submitContactForm(payload);
+
+            setIsSubmitted(true);
+            toast.success('Your message has been sent successfully! We will get back to you soon.');
+        } catch (error: any) {
+            console.error('Error sending contact form:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to send message. Please try again.';
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleReset = () => {
@@ -165,7 +179,7 @@ const ContactPage = () => {
                                                     Email Support
                                                 </h4>
                                                 <a href="mailto:support@winapizza.com" className="text-gray-800 font-bold text-base md:text-lg hover:text-orange-500 transition-colors">
-                                                    support@winapizza.com
+                                                    support@wina.pizza
                                                 </a>
                                                 <p className="text-xs text-gray-400 mt-0.5">Online 24/7, replies within 24h</p>
                                             </div>

@@ -9,20 +9,26 @@ import { useRunDraw } from '@/hooks/useDraws';
 
 interface RegionStatsCardProps {
     eventId: string;
-    regionName: string;
-    drawWeek: string;
+    eventName?: string;
+    drawDate?: string;
+    regionName?: string;
+    eventStatus?: string;
 }
 
 const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
     eventId,
-    regionName,
-    drawWeek,
+    eventName = "Event Overview",
+    drawDate,
+    regionName = "Unknown",
+    eventStatus,
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { data: statsData, isLoading, isError } = useEventAdminStats(eventId);
     const { mutate: runDraw, data: winnerData, isPending: isDrawing } = useRunDraw();
 
     const stats = statsData?.data;
+
+    console.log("stats", stats)
 
     const handleSelectWinner = () => {
         setIsModalOpen(true);
@@ -35,23 +41,29 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
                 <AnimationWrapper animationType="fadeRight" delay={0.3}>
                     <h2 className="text-xl font-bold text-[#111827]">Event Overview</h2>
                 </AnimationWrapper>
-            
+
             </div>
 
             <AnimationWrapper animationType="fadeUp" delay={0.4}>
                 <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                         <div>
-                            <h3 className="text-2xl font-bold text-[#111827] mb-1">{regionName} Pool</h3>
-                            <p className="text-gray-400 text-sm">Draw Week: {drawWeek}</p>
+                            <h3 className="text-2xl font-bold text-[#111827] mb-1">{eventName}</h3>
+                            <p className="text-gray-400 text-sm">Draw Date: {drawDate ? new Date(drawDate).toLocaleString() : 'N/A'}</p>
                         </div>
-                        <button 
-                            onClick={handleSelectWinner}
-                            className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={isLoading || isError || isDrawing}
-                        >
-                            {isDrawing ? "Selecting..." : "Select Winner"}
-                        </button>
+                        {eventStatus === 'COMPLETED' ? (
+                            <div className="bg-gray-100 text-gray-500 border border-gray-200 px-8 py-3 rounded-xl font-bold text-sm select-none">
+                                Draw Completed
+                            </div>
+                        ) : (
+                            <button
+                                onClick={handleSelectWinner}
+                                className="bg-[#FF4D00] hover:bg-[#E64500] text-white px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-orange-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={isLoading || isError || isDrawing}
+                            >
+                                {isDrawing ? "Selecting..." : "Select Winner"}
+                            </button>
+                        )}
                     </div>
 
                     {isError ? (
@@ -97,7 +109,7 @@ const RegionStatsCard: React.FC<RegionStatsCardProps> = ({
             <WinnerModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                regionName={regionName}  
+                regionName={regionName}
                 winnerData={winnerData}
                 isLoading={isDrawing}
                 runDraw={runDraw}
