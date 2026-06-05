@@ -268,7 +268,7 @@ export default function RealStories() {
                                     }}
                                 >
                                     <Image
-                                        src="/time/4.svg"
+                                        src="/time/4.png"
                                         alt="blob image"
                                         fill
                                         className="object-cover"
