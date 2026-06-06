@@ -12,7 +12,7 @@ import { useEvents, useDeleteEvent } from "@/hooks/useEvents";
 import { Event } from "@/services/event.service";
 import { Trash2 } from "lucide-react";
 
-type EventStatus = "UPCOMING" | "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
+type EventStatus = "ONGOING" | "CLOSED" | "COMPLETED" | "CANCELLED";
 
 const LotteryEventPage = () => {
   const [activeTab, setActiveTab] = useState<"All" | EventStatus>("All");
@@ -55,11 +55,6 @@ const LotteryEventPage = () => {
       id: "ONGOING",
       label: "Ongoing",
       count: allEvents.filter((e) => e.status === "ONGOING").length,
-    },
-    {
-      id: "UPCOMING",
-      label: "Upcoming",
-      count: allEvents.filter((e) => e.status === "UPCOMING").length,
     },
     {
       id: "CLOSED",
@@ -323,7 +318,7 @@ const EventCard = ({
             >
               Edit
             </button>
-            {status === "UPCOMING" && (
+            {status === "ONGOING" && (
               <button
                 onClick={handleSelectWinner}
                 className="bg-[#111827] text-white px-5 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors"
@@ -426,7 +421,7 @@ const StatBox = ({
   </div>
 );
 
-const StatusBadge = ({ status }: { status: EventStatus }) => {
+const StatusBadge = ({ status }: { status: Event["status"] }) => {
   const styles = {
     UPCOMING: "bg-[#DBEAFE] text-[#2563EB]",
     ONGOING: "bg-[#DCFCE7] text-[#16A34A]",
