@@ -139,7 +139,9 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose, onSave
                 {...register("status")}
                 className={`w-full px-4 py-3 rounded-xl border ${errors.status ? 'border-red-500' : 'border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#111827]/5 focus:border-[#111827] transition-all text-sm appearance-none bg-white`}
               >
-                <option value="UPCOMING">UPCOMING</option>
+                {event?.status === "UPCOMING" && (
+                  <option value="UPCOMING">UPCOMING</option>
+                )}
                 <option value="ONGOING">ONGOING</option>
                 <option value="CLOSED">CLOSED</option>
                 <option value="COMPLETED">COMPLETED</option>
