@@ -1,13 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Search,
-  Download,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Edit2,
-} from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Edit2 } from "lucide-react";
 import AnimationWrapper from "@/components/AnimationWrapper";
 import { useGetUsers } from "@/hooks/useUser";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -59,10 +52,6 @@ const UserList = () => {
                 className="w-full pl-12 pr-4 py-3 bg-[#F9FAFB] border border-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
-            {/* <button className="flex items-center gap-2 px-6 py-3 bg-[#F3F4F6] text-gray-600 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap">
-              <Download size={18} />
-              Export CSV
-            </button> */}
           </div>
         </div>
 
