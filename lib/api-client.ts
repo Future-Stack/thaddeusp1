@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from "@/store/useAppStore";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -21,10 +21,9 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
-// Add a response interceptor for global error handling and token refresh
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -33,19 +32,23 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
-      const { userId, refreshToken, setTokens, logout } = useAppStore.getState();
+
+      const { userId, refreshToken, setTokens, logout } =
+        useAppStore.getState();
 
       if (userId && refreshToken) {
         try {
           // Use a clean axios call to avoid interceptors loop
-          const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`, {
-            userId,
-            refreshToken,
-          });
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
+            {
+              userId,
+              refreshToken,
+            },
+          );
 
-          if (response.data.success) {
-            const newTokens = response.data.data;
+          if (response.data?.data?.success) {
+            const newTokens = response.data.data.data;
             setTokens(newTokens);
 
             // Update original request header and retry
@@ -53,23 +56,23 @@ apiClient.interceptors.response.use(
             return apiClient(originalRequest);
           }
         } catch (refreshError) {
-          console.error('Refresh token failed:', refreshError);
+          console.error("Refresh token failed:", refreshError);
           logout();
-          if (typeof window !== 'undefined') {
-            window.location.replace('/login');
+          if (typeof window !== "undefined") {
+            window.location.replace("/login");
           }
         }
       } else {
         logout();
-        if (typeof window !== 'undefined') {
-          window.location.replace('/login');
+        if (typeof window !== "undefined") {
+          window.location.replace("/login");
         }
       }
     }
 
-    const message = error.response?.data?.message || 'Something went wrong';
+    const message = error.response?.data?.message || "Something went wrong";
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

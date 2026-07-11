@@ -1,10 +1,14 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { authService, LoginPayload, SignUpPayload } from '@/services/auth.service';
-import { useAppStore } from '@/store/useAppStore';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { jwtDecode } from 'jwt-decode';
-import { signOut } from 'next-auth/react';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  authService,
+  LoginPayload,
+  SignUpPayload,
+} from "@/services/auth.service";
+import { useAppStore } from "@/store/useAppStore";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { jwtDecode } from "jwt-decode";
+import { signOut } from "next-auth/react";
 
 export const useSignUp = () => {
   const router = useRouter();
@@ -13,14 +17,18 @@ export const useSignUp = () => {
     mutationFn: (payload: SignUpPayload) => authService.signUp(payload),
     onSuccess: (response) => {
       if (response.data.success) {
-        toast.success(response.data.message || 'Registration successful! Please log in.');
-        router.push('/login');
+        toast.success(
+          response.data.message || "Registration successful! Please log in.",
+        );
+        router.push("/login");
       } else {
-        toast.error(response.data.message || 'Registration failed');
+        toast.error(response.data.message || "Registration failed");
       }
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Something went wrong during registration';
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong during registration";
       toast.error(message);
     },
   });
@@ -47,10 +55,10 @@ export const useLogin = () => {
             setUserId(decoded.sub);
           }
         } catch (e) {
-          console.error('Failed to decode token:', e);
+          console.error("Failed to decode token:", e);
         }
 
-        toast.success(response.data.result.message || 'Login successful');
+        toast.success(response.data.result.message || "Login successful");
 
         // Fetch user profile after login
         authService.getMe().then((profileResponse) => {
@@ -60,13 +68,13 @@ export const useLogin = () => {
           }
         });
 
-        router.push('/'); // Redirect to home or dashboard
+        router.push("/"); // Redirect to home or dashboard
       } else {
-        toast.error('Login failed');
+        toast.error("Login failed");
       }
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Invalid credentials';
+      const message = error.response?.data?.message || "Invalid credentials";
       toast.error(message);
     },
   });
@@ -92,10 +100,12 @@ export const useGoogleLogin = () => {
             setUserId(decoded.sub);
           }
         } catch (e) {
-          console.error('Failed to decode token:', e);
+          console.error("Failed to decode token:", e);
         }
 
-        toast.success(response.data.result.message || 'Google login successful');
+        toast.success(
+          response.data.result.message || "Google login successful",
+        );
 
         authService.getMe().then((profileResponse) => {
           if (profileResponse.data.success) {
@@ -104,13 +114,13 @@ export const useGoogleLogin = () => {
           }
         });
 
-        router.push('/');
+        router.push("/");
       } else {
-        toast.error('Google login failed');
+        toast.error("Google login failed");
       }
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || 'Google login failed';
+      const message = error.response?.data?.message || "Google login failed";
       toast.error(message);
     },
   });
@@ -139,11 +149,11 @@ export const useAdminLogin = () => {
           if (profileResponse.data.success) {
             const user = profileResponse.data.user;
 
-            if (user.role !== 'ADMIN') {
+            if (user.role !== "ADMIN") {
               // 3. If not admin, logout and show error
-              setTokens({ accessToken: '', refreshToken: '' }); // Clear tokens
+              setTokens({ accessToken: "", refreshToken: "" }); // Clear tokens
               useAppStore.getState().logout();
-              toast.error('Access denied. Admin role required.');
+              toast.error("Access denied. Admin role required.");
               return;
             }
 
@@ -156,22 +166,22 @@ export const useAdminLogin = () => {
               setUserId(decoded.sub);
             }
 
-            toast.success('Admin login successful');
-            router.push('/admin');
+            toast.success("Admin login successful");
+            router.push("/admin");
           } else {
-            toast.error('Failed to verify admin profile');
+            toast.error("Failed to verify admin profile");
           }
         } catch (e) {
-          console.error('Admin verification failed:', e);
+          console.error("Admin verification failed:", e);
           useAppStore.getState().logout();
-          toast.error('Verification failed. Please try again.');
+          toast.error("Verification failed. Please try again.");
         }
       } else {
-        toast.error('Login failed');
+        toast.error("Login failed");
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Invalid admin credentials';
+    onError: (error: { message: string }) => {
+      const message = error.message || "Invalid admin credentials";
       toast.error(message);
     },
   });
@@ -182,7 +192,7 @@ export const useGetMe = () => {
   const setRole = useAppStore((state) => state.setRole);
 
   return useQuery({
-    queryKey: ['me'],
+    queryKey: ["me"],
     queryFn: async () => {
       const response = await authService.getMe();
       if (response.data.success) {
@@ -195,7 +205,6 @@ export const useGetMe = () => {
   });
 };
 export const useLogout = () => {
-  const router = useRouter();
   const logout = useAppStore((state) => state.logout);
 
   const handleLogout = async () => {
@@ -204,9 +213,9 @@ export const useLogout = () => {
     sessionStorage.clear();
 
     // 2. Clear NextAuth session (clears cookies) and redirect
-    await signOut({ callbackUrl: '/login' });
+    await signOut({ callbackUrl: "/login" });
 
-    toast.success('Logged out successfully');
+    toast.success("Logged out successfully");
   };
 
   return { logout: handleLogout };
@@ -214,17 +223,17 @@ export const useLogout = () => {
 
 export const useChangePassword = () => {
   return useMutation({
-    mutationFn: (payload: { oldPassword: string; newPassword: string }) => 
+    mutationFn: (payload: { oldPassword: string; newPassword: string }) =>
       authService.changePassword(payload),
     onSuccess: (response) => {
       if (response.data.success) {
-        toast.success(response.data.message || 'Password changed successfully');
+        toast.success(response.data.message || "Password changed successfully");
       } else {
-        toast.error(response.data.message || 'Failed to change password');
+        toast.error(response.data.message || "Failed to change password");
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Something went wrong';
+    onError: (error: { message: string }) => {
+      const message = error.message || "Something went wrong";
       toast.error(message);
     },
   });
@@ -232,16 +241,19 @@ export const useChangePassword = () => {
 
 export const useForgotPassword = () => {
   return useMutation({
-    mutationFn: (payload: { email: string }) => authService.forgotPassword(payload),
+    mutationFn: (payload: { email: string }) =>
+      authService.forgotPassword(payload),
     onSuccess: (response) => {
       if (response.data.success) {
-        toast.success(response.data.message || 'OTP sent successfully to your email');
+        toast.success(
+          response.data.message || "OTP sent successfully to your email",
+        );
       } else {
-        toast.error(response.data.message || 'Failed to send OTP');
+        toast.error(response.data.message || "Failed to send OTP");
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Something went wrong';
+    onError: (error: { message: string }) => {
+      const message = error.message || "Something went wrong";
       toast.error(message);
     },
   });
@@ -250,22 +262,24 @@ export const useForgotPassword = () => {
 export const useResetPassword = () => {
   const router = useRouter();
   return useMutation({
-    mutationFn: (payload: { email: string; otp: string; newPassword: string }) => 
-      authService.resetPassword(payload),
+    mutationFn: (payload: {
+      email: string;
+      otp: string;
+      newPassword: string;
+    }) => authService.resetPassword(payload),
     onSuccess: (response) => {
       if (response.data.success) {
-        toast.success(response.data.message || 'Password reset successful! Please log in.');
-        router.push('/login');
+        toast.success(
+          response.data.message || "Password reset successful! Please log in.",
+        );
+        router.push("/login");
       } else {
-        toast.error(response.data.message || 'Failed to reset password');
+        toast.error(response.data.message || "Failed to reset password");
       }
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Something went wrong';
+    onError: (error: { message: string }) => {
+      const message = error.message || "Something went wrong";
       toast.error(message);
     },
   });
 };
-
-
-
